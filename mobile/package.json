@@ -1,0 +1,32 @@
+{
+  "name": "aspnet-chat",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.66.0",
+    "expo": "~52.0.33",
+    "expo-status-bar": "~2.0.1",
+    "formik": "^2.4.6",
+    "openapi-fetch": "^0.13.4",
+    "openapi-react-query": "^0.3.0",
+    "react": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-paper": "^5.13.1",
+    "react-native-safe-area-context": "^5.2.0",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "openapi-typescript": "^7.6.1",
+    "typescript": "^5.3.3"
+  },
+  "private": true,
+  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
+}
