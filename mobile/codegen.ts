@@ -1,8 +1,14 @@
 import fs from "node:fs";
 import openapiTS, { astToString } from "openapi-typescript";
+import { config } from "dotenv";
 
-const ast = await openapiTS(new URL("./my-schema.yaml", import.meta.url));
-const contents = astToString(ast);
+async function writeSchema() {
+  config();
 
-// (optional) write to file
-fs.writeFileSync("./__generated__/schema.ts", contents);
+  const ast = await openapiTS(process.env.OPENAPI_URL!);
+  const contents = astToString(ast);
+
+  fs.writeFileSync("./src/__generated__/schema.ts", contents);
+}
+
+writeSchema();

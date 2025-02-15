@@ -13,14 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
 });
 
-builder.Services.AddSingleton<ApplicationSmtpClient>();
-
-builder.Services.AddTransient<IEmailSender, EmailSender>();
-
-builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
-{
-    options.SignIn.RequireConfirmedEmail = true;
-})
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllers();
