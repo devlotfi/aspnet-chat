@@ -29,6 +29,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbConte
       .WithMany(e => e.ToInvitations)
       .HasForeignKey(e => e.ToUserId)
       .OnDelete(DeleteBehavior.Cascade);
+    builder.Entity<Invitation>()
+      .HasIndex(e => new { e.FromUserId, e.ToUserId })
+      .IsUnique();
 
     builder.Entity<Conversation>()
       .HasOne(e => e.FirstUser)
@@ -40,6 +43,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbConte
       .WithMany(e => e.SecondConversations)
       .HasForeignKey(e => e.SecondUserId)
       .OnDelete(DeleteBehavior.Cascade);
+    builder.Entity<Conversation>()
+      .HasIndex(e => new { e.FirstUserId, e.SecondUserId })
+      .IsUnique();
 
     builder.Entity<Message>()
       .HasOne(e => e.User)

@@ -445,7 +445,34 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditUserInfoDto"];
+                    "text/json": components["schemas"]["EditUserInfoDto"];
+                    "application/*+json": components["schemas"]["EditUserInfoDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserInfoResponseDto"];
+                        "application/json": components["schemas"]["UserInfoResponseDto"];
+                        "text/json": components["schemas"]["UserInfoResponseDto"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -463,6 +490,10 @@ export interface components {
             /** Format: int64 */
             expiresIn: number;
             refreshToken: string;
+        };
+        EditUserInfoDto: {
+            firstName: string;
+            lastName: string;
         };
         ForgotPasswordRequest: {
             email: string;
@@ -526,9 +557,9 @@ export interface components {
         UserInfoResponseDto: {
             /** Format: uuid */
             id: string;
-            firstName: string | null;
-            lastName: string | null;
-            email: string | null;
+            firstName: string;
+            lastName: string;
+            email: string;
         };
     };
     responses: never;

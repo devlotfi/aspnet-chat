@@ -36,9 +36,10 @@ namespace server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FirstUserId");
-
                     b.HasIndex("SecondUserId");
+
+                    b.HasIndex("FirstUserId", "SecondUserId")
+                        .IsUnique();
 
                     b.ToTable("Conversations");
                 });
@@ -60,9 +61,10 @@ namespace server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FromUserId");
-
                     b.HasIndex("ToUserId");
+
+                    b.HasIndex("FromUserId", "ToUserId")
+                        .IsUnique();
 
                     b.ToTable("Invitations");
                 });

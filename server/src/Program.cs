@@ -16,6 +16,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireCompletedProfile", (policy) =>
+    {
+        policy.RequireClaim("PorfileCompleted");
+    });
+});
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -35,6 +43,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapIdentityApi<ApplicationUser>();
+app.MapGroup("auth").MapIdentityApi<ApplicationUser>().WithTags(["Auth"]);
 
 app.Run();

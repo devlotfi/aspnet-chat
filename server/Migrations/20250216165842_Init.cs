@@ -274,9 +274,10 @@ namespace server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Conversations_FirstUserId",
+                name: "IX_Conversations_FirstUserId_SecondUserId",
                 table: "Conversations",
-                column: "FirstUserId");
+                columns: new[] { "FirstUserId", "SecondUserId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Conversations_SecondUserId",
@@ -284,9 +285,10 @@ namespace server.Migrations
                 column: "SecondUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invitations_FromUserId",
+                name: "IX_Invitations_FromUserId_ToUserId",
                 table: "Invitations",
-                column: "FromUserId");
+                columns: new[] { "FromUserId", "ToUserId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invitations_ToUserId",

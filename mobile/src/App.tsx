@@ -28,6 +28,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ConvsersationsScreen from "./screens/conversations-screen";
 import MainNavbar from "./components/main-navbar";
+import InvitationsScreen from "./screens/invitations-screen";
+import SearchScreen from "./screens/search-screen";
+import ProfileScreen from "./screens/profile-screen";
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -96,7 +99,7 @@ function BottomTabsComponent() {
       />
       <BottomTabs.Screen
         name="Invitations"
-        component={ConvsersationsScreen}
+        component={InvitationsScreen}
         options={{
           tabBarLabel: "Invitations",
           tabBarIcon: ({ color, size }) => {
@@ -108,7 +111,7 @@ function BottomTabsComponent() {
       />
       <BottomTabs.Screen
         name="Search"
-        component={ConvsersationsScreen}
+        component={SearchScreen}
         options={{
           tabBarLabel: "Search",
           tabBarIcon: ({ color, size }) => {
@@ -120,7 +123,7 @@ function BottomTabsComponent() {
       />
       <BottomTabs.Screen
         name="Profile"
-        component={ConvsersationsScreen}
+        component={ProfileScreen}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => {

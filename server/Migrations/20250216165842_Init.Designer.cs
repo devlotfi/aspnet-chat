@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250214194446_Init")]
+    [Migration("20250216165842_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -39,9 +39,10 @@ namespace server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FirstUserId");
-
                     b.HasIndex("SecondUserId");
+
+                    b.HasIndex("FirstUserId", "SecondUserId")
+                        .IsUnique();
 
                     b.ToTable("Conversations");
                 });
@@ -63,9 +64,10 @@ namespace server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FromUserId");
-
                     b.HasIndex("ToUserId");
+
+                    b.HasIndex("FromUserId", "ToUserId")
+                        .IsUnique();
 
                     b.ToTable("Invitations");
                 });

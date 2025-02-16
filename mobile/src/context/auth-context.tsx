@@ -8,6 +8,7 @@ import { Constants } from "../constants";
 import { InMemoryStore } from "../api/in-memory-store";
 import { handleAccessTokenResponse } from "../utils/handle-access-token-response";
 import { $api } from "../api/openapi-client";
+import MissingNamesScreen from "../screens/missing-names-screen";
 
 interface AuthContextType {
   user: components["schemas"]["UserInfoResponseDto"] | null;
@@ -76,6 +77,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
         <ActivityIndicator animating size="large"></ActivityIndicator>
       </View>
     );
+  }
+
+  if (userData && (!userData.firstName || !userData.lastName)) {
+    return <MissingNamesScreen></MissingNamesScreen>;
   }
 
   return (

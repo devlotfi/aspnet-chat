@@ -9,5 +9,5 @@ public class Invitation
   public ApplicationUser FromUser { get; set; } = null!;
   public required Guid ToUserId { get; set; }
   public ApplicationUser ToUser { get; set; } = null!;
-  public required DateTime Timestamp { get; set; } = DateTime.Now;
+  public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 }

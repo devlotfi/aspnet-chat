@@ -10,5 +10,5 @@ public class Message
   public ApplicationUser User { get; set; } = null!;
   public required Guid ConvsersationId { get; set; }
   public Conversation Conversation { get; set; } = null!;
-  public required DateTime Timestamp { get; set; } = DateTime.Now;
+  public required DateTime Timestamp { get; set; } = DateTime.UtcNow;
 }
