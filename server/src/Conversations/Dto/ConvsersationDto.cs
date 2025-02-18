@@ -4,7 +4,7 @@ namespace AspNetChat.Conversations;
 
 public class ConversationDto
 {
-  public Guid Id { get; set; }
-  public UserPublicInfoDto FirstUser { get; set; } = null!;
-  public UserPublicInfoDto SecondUser { get; set; } = null!;
+  public required Guid Id { get; set; }
+  public required UserPublicInfoDto FirstUser { get; set; }
+  public required UserPublicInfoDto SecondUser { get; set; }
 }

@@ -45,6 +45,21 @@ public class InvitationController(
     return Ok(invitations);
   }
 
+  [HttpGet("user/{id:guid}")]
+  [Authorize(Policy = "RequireCompletedProfile")]
+  [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  public async Task<IActionResult> GetUserInvitationStatus([FromRoute] string id)
+  {
+    var user = await this.GetCurrentUser(userManager);
+    var invitation = await dbContext.Invitations
+      .Where(e => (e.FromUserId == user.Id && e.ToUserId == user.Id)
+        || (e.ToUserId == user.Id && e.FromUserId == user.Id))
+      .FirstAsync();
+    if (invitation == null) return NotFound();
+    return Ok(invitation);
+  }
+
   [HttpPost]
   [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]

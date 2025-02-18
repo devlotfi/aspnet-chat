@@ -23,11 +23,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbConte
       .HasOne(e => e.FromUser)
       .WithMany(e => e.FromInvitations)
       .HasForeignKey(e => e.FromUserId)
+      .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
     builder.Entity<Invitation>()
       .HasOne(e => e.ToUser)
       .WithMany(e => e.ToInvitations)
       .HasForeignKey(e => e.ToUserId)
+      .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
     builder.Entity<Invitation>()
       .HasIndex(e => new { e.FromUserId, e.ToUserId })
@@ -37,11 +39,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbConte
       .HasOne(e => e.FirstUser)
       .WithMany(e => e.FirstConversations)
       .HasForeignKey(e => e.FirstUserId)
+      .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
     builder.Entity<Conversation>()
       .HasOne(e => e.SecondUser)
       .WithMany(e => e.SecondConversations)
       .HasForeignKey(e => e.SecondUserId)
+      .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
     builder.Entity<Conversation>()
       .HasIndex(e => new { e.FirstUserId, e.SecondUserId })
@@ -51,11 +55,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbConte
       .HasOne(e => e.User)
       .WithMany(e => e.Messages)
       .HasForeignKey(e => e.UserId)
+      .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
     builder.Entity<Message>()
       .HasOne(e => e.Conversation)
       .WithMany(e => e.Messages)
       .HasForeignKey(e => e.ConvsersationId)
+      .IsRequired()
       .OnDelete(DeleteBehavior.Cascade);
   }
 }

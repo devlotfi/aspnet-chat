@@ -15,12 +15,15 @@ public class UsersController(
   ) : ControllerBase
 {
   [HttpGet]
+  [Authorize]
   [ProducesResponseType<PaginationResult<UserPublicInfoDto>>(StatusCodes.Status200OK)]
   public async Task<IActionResult> Users(
     [FromQuery] int page,
     [FromQuery] string search = ""
   )
   {
+    var user = await this.GetCurrentUser(userManager);
+
     var users = await userManager.Users
       .Select(e => new UserPublicInfoDto
       {
@@ -29,17 +32,19 @@ public class UsersController(
         LastName = e.LastName
       })
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
+      .Where(e => e.Id != user.Id)
       .Skip((page - 1) * 10)
       .ToListAsync();
-    var pages = await userManager.Users
+    var count = await userManager.Users
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
+      .Where(e => e.Id != user.Id)
       .Skip((page - 1) * 10)
       .CountAsync();
 
     return Ok(new PaginationResult<UserPublicInfoDto>
     {
       Items = users,
-      Pages = pages
+      Pages = (int)Math.Ceiling((decimal)count / 10)
     });
   }
 

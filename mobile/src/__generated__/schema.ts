@@ -638,6 +638,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/invitations/user/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["InvitationDto"];
+                        "application/json": components["schemas"]["InvitationDto"];
+                        "text/json": components["schemas"]["InvitationDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/invitations": {
         parameters: {
             query?: never;
@@ -888,9 +938,9 @@ export interface components {
         };
         ConversationDto: {
             /** Format: uuid */
-            id?: string;
-            firstUser?: components["schemas"]["UserPublicInfoDto"];
-            secondUser?: components["schemas"]["UserPublicInfoDto"];
+            id: string;
+            firstUser: components["schemas"]["UserPublicInfoDto"];
+            secondUser: components["schemas"]["UserPublicInfoDto"];
         };
         CreateInvitationRequestDto: {
             /** Format: uuid */
@@ -933,11 +983,11 @@ export interface components {
         };
         InvitationDto: {
             /** Format: uuid */
-            id?: string;
-            fromUser?: components["schemas"]["UserPublicInfoDto"];
-            toUser?: components["schemas"]["UserPublicInfoDto"];
+            id: string;
+            fromUser: components["schemas"]["UserPublicInfoDto"];
+            toUser: components["schemas"]["UserPublicInfoDto"];
             /** Format: date-time */
-            timestamp?: string;
+            timestamp: string;
         };
         LoginRequest: {
             email: string;
