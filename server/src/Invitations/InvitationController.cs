@@ -16,7 +16,7 @@ public class InvitationController(
 ) : ControllerBase
 {
   [HttpGet("recieved")]
-  [Authorize]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<List<Invitation>>(StatusCodes.Status200OK)]
   public async Task<IActionResult> RecievedInvitations()
   {
@@ -31,7 +31,7 @@ public class InvitationController(
   }
 
   [HttpGet("sent")]
-  [Authorize]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<List<InvitationDto>>(StatusCodes.Status200OK)]
   public async Task<IActionResult> SendInvitations()
   {
@@ -46,7 +46,7 @@ public class InvitationController(
   }
 
   [HttpPost]
-  [Authorize]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   public async Task<IActionResult> CreateInvitation([FromBody] CreateInvitationRequestDto createInvitationRequestDto)
@@ -72,7 +72,7 @@ public class InvitationController(
   }
 
   [HttpDelete("{id:guid}")]
-  [Authorize]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   public async Task<IActionResult> DeleteInvitation([FromRoute] Guid id)
   {
@@ -81,7 +81,7 @@ public class InvitationController(
   }
 
   [HttpPost("{id:guid}")]
-  [Authorize]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<ConversationDto>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]

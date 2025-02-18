@@ -86,7 +86,6 @@ public class UsersController(
   }
 
   [HttpGet("info")]
-  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -13,9 +13,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../api/openapi-client";
 import ValidatedTextInput from "../components/validated-text-input";
 
-type Props = NativeStackScreenProps<RootNativeStackParamList, "Login">;
+type Props = NativeStackScreenProps<RootNativeStackParamList, "Register">;
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const theme = useTheme();
   const queryClient = useQueryClient();
   const navigation = useNavigation<Props["navigation"]>();
@@ -96,13 +96,10 @@ export default function LoginScreen() {
           <View style={{ gap: 20, padding: 15 }}>
             {!isKeyboardVisible ? (
               <View style={{ alignItems: "center" }}>
-                <Image
-                  source={require("../assets/logo.png")}
-                  style={{ height: 100, width: 100 }}
-                  contentFit="contain"
-                ></Image>
-                <Text style={{ fontSize: 30, fontWeight: "bold" }}>Log in</Text>
-                <Text style={{ fontSize: 15 }}>Welcome back</Text>
+                <Text style={{ fontSize: 30, fontWeight: "bold" }}>
+                  Register
+                </Text>
+                <Text style={{ fontSize: 15 }}>Welcome to the app</Text>
               </View>
             ) : null}
 
@@ -189,16 +186,9 @@ export default function LoginScreen() {
                 <Button
                   mode="outlined"
                   contentStyle={{ padding: 5 }}
-                  onPress={() => navigation.navigate("Register")}
-                >
-                  Register
-                </Button>
-                <Button
-                  mode="outlined"
-                  contentStyle={{ padding: 5 }}
                   onPress={() => navigation.navigate("Start")}
                 >
-                  Back
+                  Register
                 </Button>
               </>
             ) : null}

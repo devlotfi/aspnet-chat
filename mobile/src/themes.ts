@@ -10,6 +10,7 @@ export const lightTheme = {
     background: "#F3F1F9",
     surface: "#FFFFFF",
     outline: "#C5BDD4",
+    errorContainer: "#DD2525",
   } as MD3Colors,
 } as MD3Theme;
 
@@ -22,5 +23,6 @@ export const darkTheme = {
     background: "#192133",
     surface: "#222D46",
     outline: "#435680",
+    errorContainer: "#DD2525",
   } as MD3Colors,
 } as MD3Theme;

@@ -23,8 +23,8 @@ export const authMiddelware: Middleware = {
       if (!refreshToken) throw new Error("No refresh token");
 
       const { data } = await axios.get<
-        paths["/refresh"]["post"]["responses"]["200"]["content"]["application/json"]
-      >("/refresh", {
+        paths["/auth/refresh"]["post"]["responses"]["200"]["content"]["application/json"]
+      >("/auth/refresh", {
         withCredentials: true,
         baseURL: process.env.EXPO_PUBLIC_API_URL,
         params: {

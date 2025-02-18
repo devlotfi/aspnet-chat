@@ -1,10 +1,17 @@
 import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
 export default function SearchScreen() {
+  const theme = useTheme();
+
   return (
-    <View>
-      <Text>Search</Text>
+    <View
+      style={{
+        backgroundColor: theme.colors.background,
+        flex: 1,
+      }}
+    >
+      <Text>Search users</Text>
     </View>
   );
 }

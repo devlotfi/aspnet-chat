@@ -1,11 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useColorScheme, View } from "react-native";
-import {
-  BottomNavigation,
-  Button,
-  PaperProvider,
-  useTheme,
-} from "react-native-paper";
+import { useColorScheme } from "react-native";
+import { BottomNavigation, PaperProvider, useTheme } from "react-native-paper";
 import { CommonActions, NavigationContainer } from "@react-navigation/native";
 import { RootNativeStackParamList } from "./navigation-types";
 import StartScreen from "./screens/start-screen";
@@ -15,8 +10,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthContext, AuthProvider } from "./context/auth-context";
 import StatusBarLayout from "./layout/status-bar-layout";
 import { useContext } from "react";
-import * as SecureStore from "expo-secure-store";
-import { Constants } from "./constants";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -31,6 +24,7 @@ import MainNavbar from "./components/main-navbar";
 import InvitationsScreen from "./screens/invitations-screen";
 import SearchScreen from "./screens/search-screen";
 import ProfileScreen from "./screens/profile-screen";
+import RegisterScreen from "./screens/register-screen";
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -160,6 +154,10 @@ function RootNativeStackComponent() {
             component={StartScreen}
           ></RootNativeStack.Screen>
           <RootNativeStack.Screen
+            name="Register"
+            component={RegisterScreen}
+          ></RootNativeStack.Screen>
+          <RootNativeStack.Screen
             name="Login"
             component={LoginScreen}
           ></RootNativeStack.Screen>
@@ -170,23 +168,10 @@ function RootNativeStackComponent() {
 }
 
 function App() {
-  const theme = useTheme();
-
   return (
-    <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
-      <Button
-        onPress={async () => {
-          await SecureStore.deleteItemAsync(
-            Constants.REFRESH_TOKEN_STORAGE_KEY
-          );
-        }}
-      >
-        lol
-      </Button>
-      <NavigationContainer>
-        <RootNativeStackComponent></RootNativeStackComponent>
-      </NavigationContainer>
-    </View>
+    <NavigationContainer>
+      <RootNativeStackComponent></RootNativeStackComponent>
+    </NavigationContainer>
   );
 }
 

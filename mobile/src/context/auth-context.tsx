@@ -5,13 +5,12 @@ import { ActivityIndicator, useTheme } from "react-native-paper";
 import { useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { Constants } from "../constants";
-import { InMemoryStore } from "../api/in-memory-store";
 import { handleAccessTokenResponse } from "../utils/handle-access-token-response";
 import { $api } from "../api/openapi-client";
 import MissingNamesScreen from "../screens/missing-names-screen";
 
 interface AuthContextType {
-  user: components["schemas"]["UserInfoResponseDto"] | null;
+  user: components["schemas"]["UserDto"] | null;
 }
 
 const initialValue: AuthContextType = {
@@ -23,7 +22,7 @@ export const AuthContext = createContext(initialValue);
 export function AuthProvider({ children }: PropsWithChildren) {
   const theme = useTheme();
 
-  const { mutateAsync } = $api.useMutation("post", "/refresh", {
+  const { mutateAsync } = $api.useMutation("post", "/auth/refresh", {
     async onSuccess(data) {
       await handleAccessTokenResponse(data);
     },
@@ -35,10 +34,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
         Constants.REFRESH_TOKEN_STORAGE_KEY
       );
       console.log("Auth Context / Refresh Token: ", refreshToken);
+      if (!refreshToken) return null;
 
       const data = await mutateAsync({
         body: {
-          refreshToken: refreshToken!,
+          refreshToken: refreshToken,
         },
       });
       if (data) return data;
@@ -57,6 +57,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       enabled: refreshData !== undefined && refreshData !== null,
       refetchOnWindowFocus: false,
       retry: false,
+      networkMode: "online",
       select(data) {
         console.log(data);
         return data;
@@ -79,7 +80,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     );
   }
 
-  if (userData && (!userData.firstName || !userData.lastName)) {
+  if (
+    userData &&
+    (userData.firstName === null || !userData.lastName === null)
+  ) {
     return <MissingNamesScreen></MissingNamesScreen>;
   }
 

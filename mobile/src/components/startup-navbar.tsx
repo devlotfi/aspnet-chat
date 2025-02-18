@@ -12,13 +12,14 @@ export default function StartupNavbar() {
         alignItems: "center",
         padding: 15,
         gap: 10,
-        borderBottomWidth: 1,
-        borderColor: theme.colors.outline,
+        backgroundColor: theme.colors.surface,
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
       }}
     >
       <Image
         source={require("../assets/logo.png")}
-        style={{ height: 50, width: 50 }}
+        style={{ height: 40, width: 40 }}
         contentFit="contain"
       ></Image>
 
