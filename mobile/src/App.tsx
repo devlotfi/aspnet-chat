@@ -25,6 +25,7 @@ import InvitationsScreen from "./screens/invitations-screen";
 import SearchScreen from "./screens/search-screen";
 import ProfileScreen from "./screens/profile-screen";
 import RegisterScreen from "./screens/register-screen";
+import { KeyboardProvider } from "./context/keyboard-context";
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -183,11 +184,13 @@ export default function Providers() {
   return (
     <QueryClientProvider client={queryClient}>
       <PaperProvider theme={colorScheme === "light" ? lightTheme : darkTheme}>
-        <StatusBarLayout>
-          <AuthProvider>
-            <App></App>
-          </AuthProvider>
-        </StatusBarLayout>
+        <KeyboardProvider>
+          <StatusBarLayout>
+            <AuthProvider>
+              <App></App>
+            </AuthProvider>
+          </StatusBarLayout>
+        </KeyboardProvider>
       </PaperProvider>
     </QueryClientProvider>
   );

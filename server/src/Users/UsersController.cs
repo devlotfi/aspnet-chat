@@ -18,7 +18,7 @@ public class UsersController(
   [ProducesResponseType<PaginationResult<UserPublicInfoDto>>(StatusCodes.Status200OK)]
   public async Task<IActionResult> Users(
     [FromQuery] int page,
-    [FromQuery] string search
+    [FromQuery] string search = ""
   )
   {
     var users = await userManager.Users
@@ -28,11 +28,11 @@ public class UsersController(
         FirstName = e.FirstName,
         LastName = e.LastName
       })
-      .Where(e => e.FirstName.Contains(search) || e.LastName.Contains(search))
+      .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Skip((page - 1) * 10)
       .ToListAsync();
     var pages = await userManager.Users
-      .Where(e => EF.Functions.ILike(e.FirstName, $"${search}") || EF.Functions.ILike(e.LastName, $"${search}"))
+      .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Skip((page - 1) * 10)
       .CountAsync();
 

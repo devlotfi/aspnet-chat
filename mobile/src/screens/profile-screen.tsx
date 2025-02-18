@@ -15,12 +15,13 @@ import { $api } from "../api/openapi-client";
 import { AuthContext } from "../context/auth-context";
 import ValidatedTextInput from "../components/validated-text-input";
 import LogOutDialog from "../components/logout-dialog";
+import { KeyboardContext } from "../context/keyboard-context";
 
 export default function ProfileScreen() {
   const theme = useTheme();
   const queryClient = useQueryClient();
   const { user } = useContext(AuthContext);
-  const [isKeyboardVisible, setKeyboardVisible] = useState<boolean>(false);
+  const { isKeyboardVisible } = useContext(KeyboardContext);
   const [logoutDialogVisible, setLogoutDialogVisible] =
     useState<boolean>(false);
 
@@ -60,27 +61,6 @@ export default function ProfileScreen() {
       },
     }
   );
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -162,19 +142,22 @@ export default function ProfileScreen() {
             >
               Edit profile
             </Button>
-            <Button
-              mode="outlined"
-              textColor={theme.colors.errorContainer}
-              style={{
-                borderColor: theme.colors.errorContainer,
-              }}
-              contentStyle={{ padding: 5 }}
-              onPress={async () => {
-                setLogoutDialogVisible(true);
-              }}
-            >
-              Log out
-            </Button>
+
+            {!isKeyboardVisible ? (
+              <Button
+                mode="outlined"
+                textColor={theme.colors.errorContainer}
+                style={{
+                  borderColor: theme.colors.errorContainer,
+                }}
+                contentStyle={{ padding: 5 }}
+                onPress={async () => {
+                  setLogoutDialogVisible(true);
+                }}
+              >
+                Log out
+              </Button>
+            ) : null}
             <LogOutDialog
               visible={logoutDialogVisible}
               setVisible={setLogoutDialogVisible}
