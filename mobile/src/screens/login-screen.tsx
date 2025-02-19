@@ -4,7 +4,7 @@ import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
 import { RootNativeStackParamList } from "../navigation-types";
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import StartupNavbar from "../components/startup-navbar";
@@ -12,6 +12,7 @@ import { handleAccessTokenResponse } from "../utils/handle-access-token-response
 import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../api/openapi-client";
 import ValidatedTextInput from "../components/validated-text-input";
+import { KeyboardContext } from "../context/keyboard-context";
 
 type Props = NativeStackScreenProps<RootNativeStackParamList, "Login">;
 
@@ -19,7 +20,7 @@ export default function LoginScreen() {
   const theme = useTheme();
   const queryClient = useQueryClient();
   const navigation = useNavigation<Props["navigation"]>();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const { isKeyboardVisible } = useContext(KeyboardContext);
 
   const formik = useFormik({
     initialValues: {
@@ -60,27 +61,6 @@ export default function LoginScreen() {
       },
     }
   );
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

@@ -1,34 +1,36 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
-import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Card, Text, useTheme } from "react-native-paper";
 import { RootNativeStackParamList } from "../navigation-types";
-import { Image } from "expo-image";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import StartupNavbar from "../components/startup-navbar";
-import { handleAccessTokenResponse } from "../utils/handle-access-token-response";
-import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../api/openapi-client";
 import ValidatedTextInput from "../components/validated-text-input";
+import { KeyboardContext } from "../context/keyboard-context";
 
 type Props = NativeStackScreenProps<RootNativeStackParamList, "Register">;
 
 export default function RegisterScreen() {
   const theme = useTheme();
-  const queryClient = useQueryClient();
   const navigation = useNavigation<Props["navigation"]>();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const { isKeyboardVisible } = useContext(KeyboardContext);
 
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
     validationSchema: yup.object({
       email: yup.string().email().required(),
-      password: yup.string().required(),
+      password: yup.string().min(7).max(64).required(),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("password")], "Passwords must match")
+        .required(),
     }),
     onSubmit(values) {
       console.log(values);
@@ -36,51 +38,19 @@ export default function RegisterScreen() {
         body: {
           ...values,
         },
-        params: {
-          query: {
-            useCookies: false,
-            useSessionCookies: false,
-          },
-        },
       });
     },
   });
 
   const { mutate, isPending, isError } = $api.useMutation(
     "post",
-    "/auth/login",
+    "/auth/register",
     {
       async onSuccess(data) {
-        console.log(data);
-        handleAccessTokenResponse(data);
-        queryClient.resetQueries({
-          exact: false,
-          queryKey: ["INITIAL_AUTH"],
-        });
+        navigation.navigate("Login");
       },
     }
   );
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -126,6 +96,17 @@ export default function RegisterScreen() {
                 autoCapitalize="none"
                 label="Password"
               ></ValidatedTextInput>
+              <ValidatedTextInput
+                name="confirmPassword"
+                formik={formik}
+                mode="outlined"
+                outlineStyle={{
+                  borderRadius: 10,
+                }}
+                secureTextEntry
+                autoCapitalize="none"
+                label="Confirm password"
+              ></ValidatedTextInput>
 
               {isError ? (
                 <Card
@@ -156,7 +137,7 @@ export default function RegisterScreen() {
               onPress={() => formik.handleSubmit()}
               loading={isPending}
             >
-              Log in
+              Register
             </Button>
             {!isKeyboardVisible ? (
               <>
@@ -186,9 +167,9 @@ export default function RegisterScreen() {
                 <Button
                   mode="outlined"
                   contentStyle={{ padding: 5 }}
-                  onPress={() => navigation.navigate("Start")}
+                  onPress={() => navigation.navigate("Login")}
                 >
-                  Register
+                  Login
                 </Button>
               </>
             ) : null}

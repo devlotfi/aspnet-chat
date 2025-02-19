@@ -9,14 +9,14 @@ import { InMemoryStore } from "./in-memory-store";
 export const authMiddelware: Middleware = {
   async onRequest({ request }) {
     if (!InMemoryStore.accessToken || !InMemoryStore.expiresAt) {
-      console.log("Auth Middleware / Access Token: ", "No token");
+      /* console.log("Auth Middleware / Access Token: ", "No token"); */
       return;
     }
 
     const checkDate = new Date();
     checkDate.setMinutes(checkDate.getMinutes() + 5);
     if (checkDate >= InMemoryStore.expiresAt) {
-      console.log("Auth Middleware / Access Token: ", "Renew");
+      /* console.log("Auth Middleware / Access Token: ", "Renew"); */
       const refreshToken = await SecureStore.getItemAsync(
         Constants.REFRESH_TOKEN_STORAGE_KEY
       );
@@ -34,12 +34,12 @@ export const authMiddelware: Middleware = {
 
       handleAccessTokenResponse(data);
     } else {
-      console.log("Auth Middleware / Access Token: ", "Valid Token");
+      /* console.log("Auth Middleware / Access Token: ", "Valid Token"); */
     }
-    console.log(
+    /* console.log(
       "Auth Middleware / Access Token Set: ",
       InMemoryStore.accessToken
-    );
+    ); */
 
     request.headers.set("Authorization", `Bearer ${InMemoryStore.accessToken}`);
   },

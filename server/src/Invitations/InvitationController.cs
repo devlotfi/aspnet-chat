@@ -17,7 +17,7 @@ public class InvitationController(
 {
   [HttpGet("recieved")]
   [Authorize(Policy = "RequireCompletedProfile")]
-  [ProducesResponseType<List<Invitation>>(StatusCodes.Status200OK)]
+  [ProducesResponseType<List<InvitationDto>>(StatusCodes.Status200OK)]
   public async Task<IActionResult> RecievedInvitations()
   {
     var user = await this.GetCurrentUser(userManager);

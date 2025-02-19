@@ -1,18 +1,19 @@
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import StartupNavbar from "../components/startup-navbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../api/openapi-client";
 import ValidatedTextInput from "../components/validated-text-input";
+import { KeyboardContext } from "../context/keyboard-context";
 
 export default function MissingNamesScreen() {
   const theme = useTheme();
   const queryClient = useQueryClient();
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const { isKeyboardVisible } = useContext(KeyboardContext);
 
   const formik = useFormik({
     initialValues: {
@@ -46,27 +47,6 @@ export default function MissingNamesScreen() {
       },
     }
   );
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
-  }, []);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

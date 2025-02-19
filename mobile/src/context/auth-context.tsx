@@ -33,7 +33,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       const refreshToken = await SecureStore.getItemAsync(
         Constants.REFRESH_TOKEN_STORAGE_KEY
       );
-      console.log("Auth Context / Refresh Token: ", refreshToken);
+      /* console.log("Auth Context / Refresh Token: ", refreshToken); */
       if (!refreshToken) return null;
 
       const data = await mutateAsync({

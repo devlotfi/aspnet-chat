@@ -13,16 +13,23 @@ import { useContext, useState } from "react";
 import { $api } from "../api/openapi-client";
 import { AuthContext } from "../context/auth-context";
 import { useQueryClient } from "@tanstack/react-query";
+import { DateUtils } from "../utils/date-utils";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { BottomTabsParamList } from "../navigation-types";
 
 interface Props {
   user: components["schemas"]["UserPublicInfoDto"];
 }
 
-export default function UserItem({ user }: Props) {
+type NavigationProps = BottomTabScreenProps<BottomTabsParamList, "Search">;
+
+export default function UserItem({ user }: Props & NavigationProps) {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const { user: currrentUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const navigation = useNavigation<NavigationProps["navigation"]>();
 
   if (
     !user.firstName ||
@@ -57,6 +64,14 @@ export default function UserItem({ user }: Props) {
       onSuccess(data, variables, context) {
         queryClient.resetQueries({
           exact: false,
+          queryKey: ["get", "/invitations/sent"],
+        });
+        queryClient.resetQueries({
+          exact: false,
+          queryKey: ["get", "/invitations/recieved"],
+        });
+        queryClient.resetQueries({
+          exact: false,
           queryKey: ["get", "/invitations/user/{id}"],
         });
       },
@@ -64,20 +79,6 @@ export default function UserItem({ user }: Props) {
         console.log(error);
       },
     });
-  const {
-    mutate: mutateDeleteInvitation,
-    isPending: isPendingDeleteInvitation,
-  } = $api.useMutation("delete", "/invitations/{id}", {
-    onSuccess(data, variables, context) {
-      queryClient.resetQueries({
-        exact: false,
-        queryKey: ["get", "/invitations/user/{id}"],
-      });
-    },
-    onError(error, variables, context) {
-      console.log(error);
-    },
-  });
 
   return (
     <>
@@ -98,7 +99,9 @@ export default function UserItem({ user }: Props) {
           size={60}
           label={`${user.firstName[0]}${user.lastName[0]}`}
         ></Avatar.Text>
-        <Text style={{ fontSize: 20 }}>{user.firstName}</Text>
+        <Text style={{ fontSize: 20 }}>
+          {user.firstName} {user.lastName}
+        </Text>
       </Pressable>
 
       <Portal>
@@ -108,6 +111,8 @@ export default function UserItem({ user }: Props) {
           contentContainerStyle={{
             justifyContent: "flex-start",
             backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.outline,
+            borderWidth: 1,
             marginHorizontal: 30,
             minHeight: 100,
             borderRadius: 20,
@@ -145,45 +150,29 @@ export default function UserItem({ user }: Props) {
                   }}
                 >
                   {user.firstName} {user.lastName}
-                  <Text>lol: {JSON.stringify(userInvitationStatusData)}</Text>
                 </Text>
               </View>
               <View style={{ paddingHorizontal: 0 }}>
                 {userInvitationStatusData ? (
-                  userInvitationStatusData.toUser.id === currrentUser.id ? (
-                    <>
-                      <Button
-                        mode="contained"
-                        contentStyle={{ width: "100%", paddingVertical: 5 }}
-                      >
-                        Send invitation
-                      </Button>
-                      <Button
-                        mode="contained"
-                        contentStyle={{ width: "100%", paddingVertical: 5 }}
-                      >
-                        Send invitation
-                      </Button>
-                    </>
-                  ) : (
+                  <View style={{ gap: 10 }}>
+                    <Text style={{ textAlign: "center" }}>
+                      Send at:{" "}
+                      {DateUtils.formatDateTime(
+                        new Date(userInvitationStatusData.timestamp)
+                      )}
+                    </Text>
+
                     <Button
-                      mode="outlined"
-                      textColor={theme.colors.errorContainer}
+                      mode="contained"
                       contentStyle={{ width: "100%", paddingVertical: 5 }}
-                      loading={isPendingDeleteInvitation}
                       onPress={() => {
-                        mutateDeleteInvitation({
-                          params: {
-                            path: {
-                              id: userInvitationStatusData.id,
-                            },
-                          },
-                        });
+                        navigation.navigate("Invitations");
+                        setShowDetails(false);
                       }}
                     >
-                      Delete invitation
+                      Go to invitatations
                     </Button>
-                  )
+                  </View>
                 ) : (
                   <Button
                     mode="contained"

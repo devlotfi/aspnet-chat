@@ -16,7 +16,6 @@ import {
   faComments,
   faSearch,
   faUser,
-  faUserGroup,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import ConvsersationsScreen from "./screens/conversations-screen";

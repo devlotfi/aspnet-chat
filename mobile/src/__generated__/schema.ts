@@ -586,9 +586,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Invitation"][];
-                        "application/json": components["schemas"]["Invitation"][];
-                        "text/json": components["schemas"]["Invitation"][];
+                        "text/plain": components["schemas"]["InvitationDto"][];
+                        "application/json": components["schemas"]["InvitationDto"][];
+                        "text/json": components["schemas"]["InvitationDto"][];
                     };
                 };
             };

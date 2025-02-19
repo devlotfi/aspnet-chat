@@ -8,5 +8,6 @@ export type RootNativeStackParamList = {
 export type BottomTabsParamList = {
   Convsersations: undefined;
   Invitations: undefined;
+  Search: undefined;
   Profile: undefined;
 };
