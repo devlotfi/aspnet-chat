@@ -49,15 +49,17 @@ public class InvitationController(
   [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<IActionResult> GetUserInvitationStatus([FromRoute] string id)
+  public async Task<IActionResult> GetUserInvitationStatus([FromRoute] Guid id)
   {
     var user = await this.GetCurrentUser(userManager);
     var invitation = await dbContext.Invitations
-      .Where(e => (e.FromUserId == user.Id && e.ToUserId == user.Id)
-        || (e.ToUserId == user.Id && e.FromUserId == user.Id))
-      .FirstAsync();
+      .Where(e => (e.FromUserId == user.Id && e.ToUserId == id)
+        || (e.ToUserId == user.Id && e.FromUserId == id))
+      .Include(e => e.FromUser)
+      .Include(e => e.ToUser)
+      .FirstOrDefaultAsync();
     if (invitation == null) return NotFound();
-    return Ok(invitation);
+    return Ok(invitation.ToInvitationDtoFromInvitation());
   }
 
   [HttpPost]
@@ -67,10 +69,9 @@ public class InvitationController(
   public async Task<IActionResult> CreateInvitation([FromBody] CreateInvitationRequestDto createInvitationRequestDto)
   {
     var user = await this.GetCurrentUser(userManager);
-
     if (user.Id == createInvitationRequestDto.UserId) return BadRequest();
 
-    var existingInvitation = await dbContext.Invitations.FirstAsync(
+    var existingInvitation = await dbContext.Invitations.FirstOrDefaultAsync(
       e => (e.FromUserId == user.Id && e.ToUserId == createInvitationRequestDto.UserId) ||
       (e.ToUserId == user.Id && e.FromUserId == createInvitationRequestDto.UserId)
     );
@@ -83,6 +84,12 @@ public class InvitationController(
     };
     await dbContext.Invitations.AddAsync(invitation);
     await dbContext.SaveChangesAsync();
+
+    var createdInvitation = await dbContext.Invitations
+      .Include(e => e.FromUser)
+      .Include(e => e.ToUser)
+      .FirstOrDefaultAsync(e => e.Id == invitation.Id);
+    if (createdInvitation == null) return NotFound();
     return CreatedAtAction(nameof(CreateInvitation), new { Id = invitation.Id }, invitation.ToInvitationDtoFromInvitation());
   }
 

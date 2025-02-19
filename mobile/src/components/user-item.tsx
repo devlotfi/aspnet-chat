@@ -12,6 +12,7 @@ import {
 import { useContext, useState } from "react";
 import { $api } from "../api/openapi-client";
 import { AuthContext } from "../context/auth-context";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   user: components["schemas"]["UserPublicInfoDto"];
@@ -21,6 +22,7 @@ export default function UserItem({ user }: Props) {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const { user: currrentUser } = useContext(AuthContext);
+  const queryClient = useQueryClient();
 
   if (
     !user.firstName ||
@@ -53,12 +55,29 @@ export default function UserItem({ user }: Props) {
   const { mutate: mutateSendInvitation, isPending: isPendingSendInvitation } =
     $api.useMutation("post", "/invitations", {
       onSuccess(data, variables, context) {
-        console.log(data);
+        queryClient.resetQueries({
+          exact: false,
+          queryKey: ["get", "/invitations/user/{id}"],
+        });
       },
       onError(error, variables, context) {
         console.log(error);
       },
     });
+  const {
+    mutate: mutateDeleteInvitation,
+    isPending: isPendingDeleteInvitation,
+  } = $api.useMutation("delete", "/invitations/{id}", {
+    onSuccess(data, variables, context) {
+      queryClient.resetQueries({
+        exact: false,
+        queryKey: ["get", "/invitations/user/{id}"],
+      });
+    },
+    onError(error, variables, context) {
+      console.log(error);
+    },
+  });
 
   return (
     <>
@@ -126,14 +145,10 @@ export default function UserItem({ user }: Props) {
                   }}
                 >
                   {user.firstName} {user.lastName}
+                  <Text>lol: {JSON.stringify(userInvitationStatusData)}</Text>
                 </Text>
               </View>
               <View style={{ paddingHorizontal: 0 }}>
-                <Text>
-                  {JSON.stringify(showDetails)}
-                  {JSON.stringify(userInvitationStatusData)}
-                </Text>
-
                 {userInvitationStatusData ? (
                   userInvitationStatusData.toUser.id === currrentUser.id ? (
                     <>
@@ -152,8 +167,19 @@ export default function UserItem({ user }: Props) {
                     </>
                   ) : (
                     <Button
-                      mode="contained"
+                      mode="outlined"
+                      textColor={theme.colors.errorContainer}
                       contentStyle={{ width: "100%", paddingVertical: 5 }}
+                      loading={isPendingDeleteInvitation}
+                      onPress={() => {
+                        mutateDeleteInvitation({
+                          params: {
+                            path: {
+                              id: userInvitationStatusData.id,
+                            },
+                          },
+                        });
+                      }}
                     >
                       Delete invitation
                     </Button>
