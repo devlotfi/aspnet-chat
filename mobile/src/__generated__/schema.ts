@@ -564,6 +564,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/link/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserLinkStatusDto"];
+                        "application/json": components["schemas"]["UserLinkStatusDto"];
+                        "text/json": components["schemas"]["UserLinkStatusDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/invitations/recieved": {
         parameters: {
             query?: never;
@@ -626,56 +665,6 @@ export interface paths {
                         "text/plain": components["schemas"]["InvitationDto"][];
                         "application/json": components["schemas"]["InvitationDto"][];
                         "text/json": components["schemas"]["InvitationDto"][];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/invitations/user/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["InvitationDto"];
-                        "application/json": components["schemas"]["InvitationDto"];
-                        "text/json": components["schemas"]["InvitationDto"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
             };
@@ -1002,15 +991,19 @@ export interface components {
         UserDto: {
             /** Format: uuid */
             id: string;
-            firstName: string | null;
-            lastName: string | null;
+            firstName: string;
+            lastName: string;
             email: string;
+        };
+        UserLinkStatusDto: {
+            invitation: boolean;
+            conversation: boolean;
         };
         UserPublicInfoDto: {
             /** Format: uuid */
             id: string;
-            firstName: string | null;
-            lastName: string | null;
+            firstName: string;
+            lastName: string;
         };
     };
     responses: never;

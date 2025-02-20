@@ -26,6 +26,7 @@ import ProfileScreen from "./screens/profile-screen";
 import RegisterScreen from "./screens/register-screen";
 import { KeyboardProvider } from "./context/keyboard-context";
 import { SignalRProvider } from "./context/signalr-context";
+import ChatScreen from "./screens/chat-screen";
 
 const BottomTabs = createBottomTabNavigator();
 
@@ -33,104 +34,100 @@ function BottomTabsComponent() {
   const theme = useTheme();
 
   return (
-    <SignalRProvider>
-      <BottomTabs.Navigator
-        screenOptions={{
-          header: () => {
-            return <MainNavbar></MainNavbar>;
+    <BottomTabs.Navigator
+      screenOptions={{
+        header: () => {
+          return <MainNavbar></MainNavbar>;
+        },
+      }}
+      tabBar={({ navigation, state, descriptors, insets }) => (
+        <BottomNavigation.Bar
+          style={{
+            backgroundColor: theme.colors.surface,
+          }}
+          activeIndicatorStyle={{
+            backgroundColor: theme.colors.primary,
+          }}
+          navigationState={state}
+          safeAreaInsets={insets}
+          onTabPress={({ route, preventDefault }) => {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (event.defaultPrevented) {
+              preventDefault();
+            } else {
+              navigation.dispatch({
+                ...CommonActions.navigate(route.name, route.params),
+                target: state.key,
+              });
+            }
+          }}
+          renderIcon={({ route, focused, color }) => {
+            const { options } = descriptors[route.key];
+            if (options.tabBarIcon) {
+              return options.tabBarIcon({ focused, color, size: 22 });
+            }
+
+            return null;
+          }}
+          getLabelText={({ route }) => {
+            const { options } = descriptors[route.key];
+            return options.tabBarLabel as string;
+          }}
+        />
+      )}
+    >
+      <BottomTabs.Screen
+        name="Convsersations"
+        component={ConvsersationsScreen}
+        options={{
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <FontAwesomeIcon icon={faComments} size={size} color={color} />
+            );
           },
         }}
-        tabBar={({ navigation, state, descriptors, insets }) => (
-          <BottomNavigation.Bar
-            style={{
-              backgroundColor: theme.colors.surface,
-            }}
-            activeIndicatorStyle={{
-              backgroundColor: theme.colors.primary,
-            }}
-            navigationState={state}
-            safeAreaInsets={insets}
-            onTabPress={({ route, preventDefault }) => {
-              const event = navigation.emit({
-                type: "tabPress",
-                target: route.key,
-                canPreventDefault: true,
-              });
-
-              if (event.defaultPrevented) {
-                preventDefault();
-              } else {
-                navigation.dispatch({
-                  ...CommonActions.navigate(route.name, route.params),
-                  target: state.key,
-                });
-              }
-            }}
-            renderIcon={({ route, focused, color }) => {
-              const { options } = descriptors[route.key];
-              if (options.tabBarIcon) {
-                return options.tabBarIcon({ focused, color, size: 22 });
-              }
-
-              return null;
-            }}
-            getLabelText={({ route }) => {
-              const { options } = descriptors[route.key];
-              return options.tabBarLabel as string;
-            }}
-          />
-        )}
-      >
-        <BottomTabs.Screen
-          name="Convsersations"
-          component={ConvsersationsScreen}
-          options={{
-            tabBarLabel: "Chat",
-            tabBarIcon: ({ color, size }) => {
-              return (
-                <FontAwesomeIcon icon={faComments} size={size} color={color} />
-              );
-            },
-          }}
-        />
-        <BottomTabs.Screen
-          name="Invitations"
-          component={InvitationsScreen}
-          options={{
-            tabBarLabel: "Invitations",
-            tabBarIcon: ({ color, size }) => {
-              return (
-                <FontAwesomeIcon icon={faUserPlus} size={size} color={color} />
-              );
-            },
-          }}
-        />
-        <BottomTabs.Screen
-          name="Search"
-          component={SearchScreen}
-          options={{
-            tabBarLabel: "Search",
-            tabBarIcon: ({ color, size }) => {
-              return (
-                <FontAwesomeIcon icon={faSearch} size={size} color={color} />
-              );
-            },
-          }}
-        />
-        <BottomTabs.Screen
-          name="Profile"
-          component={ProfileScreen}
-          options={{
-            tabBarLabel: "Profile",
-            tabBarIcon: ({ color, size }) => {
-              return (
-                <FontAwesomeIcon icon={faUser} size={size} color={color} />
-              );
-            },
-          }}
-        />
-      </BottomTabs.Navigator>
-    </SignalRProvider>
+      />
+      <BottomTabs.Screen
+        name="Invitations"
+        component={InvitationsScreen}
+        options={{
+          tabBarLabel: "Invitations",
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <FontAwesomeIcon icon={faUserPlus} size={size} color={color} />
+            );
+          },
+        }}
+      />
+      <BottomTabs.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          tabBarLabel: "Search",
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <FontAwesomeIcon icon={faSearch} size={size} color={color} />
+            );
+          },
+        }}
+      />
+      <BottomTabs.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size }) => {
+            return <FontAwesomeIcon icon={faUser} size={size} color={color} />;
+          },
+        }}
+      />
+    </BottomTabs.Navigator>
   );
 }
 
@@ -150,6 +147,10 @@ function RootNativeStackComponent() {
           <RootNativeStack.Screen
             name="Home"
             component={BottomTabsComponent}
+          ></RootNativeStack.Screen>
+          <RootNativeStack.Screen
+            name="Chat"
+            component={ChatScreen}
           ></RootNativeStack.Screen>
         </>
       ) : (

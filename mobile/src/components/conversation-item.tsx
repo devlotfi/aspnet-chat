@@ -16,26 +16,35 @@ import { useQueryClient } from "@tanstack/react-query";
 import { DateUtils } from "../utils/date-utils";
 import { useNavigation } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { BottomTabsParamList } from "../navigation-types";
+import {
+  BottomTabsParamList,
+  RootNativeStackParamList,
+} from "../navigation-types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { getOtherUserInfo } from "../utils/get-other-user-info";
 
 interface Props {
   conversation: components["schemas"]["ConversationDto"];
 }
 
-type NavigationProps = BottomTabScreenProps<BottomTabsParamList, "Search">;
+type NavigationProps = NativeStackScreenProps<RootNativeStackParamList, "Home">;
 
 export default function ConversationItem({ conversation }: Props) {
   const theme = useTheme();
-  const { user: currrentUser } = useContext(AuthContext);
-  const queryClient = useQueryClient();
+  const { user } = useContext(AuthContext);
   const navigation = useNavigation<NavigationProps["navigation"]>();
 
-  if (!currrentUser || !currrentUser.firstName || !currrentUser.lastName)
-    throw new Error("Missing user details");
+  if (!user) throw new Error("Missing user details");
+
+  const otherUser = getOtherUserInfo(conversation, user);
 
   return (
     <Pressable
-      onPress={() => {}}
+      onPress={() =>
+        navigation.navigate("Chat", {
+          conversation,
+        })
+      }
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -47,8 +56,13 @@ export default function ConversationItem({ conversation }: Props) {
         marginBottom: 15,
       }}
     >
-      <Avatar.Text size={60} label={`LD`}></Avatar.Text>
-      <Text style={{ fontSize: 20 }}>Test LOl</Text>
+      <Avatar.Text
+        size={60}
+        label={`${otherUser.firstName[0]}${otherUser.lastName[0]}`}
+      ></Avatar.Text>
+      <Text style={{ fontSize: 20 }}>
+        {otherUser.firstName} {otherUser.lastName}
+      </Text>
     </Pressable>
   );
 }

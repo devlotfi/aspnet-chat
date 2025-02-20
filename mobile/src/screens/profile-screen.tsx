@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   const [logoutDialogVisible, setLogoutDialogVisible] =
     useState<boolean>(false);
 
-  if (!user || !user.firstName || !user.lastName) {
+  if (!user) {
     throw new Error("Missing user data");
   }
 

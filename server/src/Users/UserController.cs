@@ -28,8 +28,8 @@ public class UserController(
       .Select(e => new UserPublicInfoDto
       {
         Id = e.Id,
-        FirstName = e.FirstName,
-        LastName = e.LastName
+        FirstName = e.FirstName ?? "",
+        LastName = e.LastName ?? ""
       })
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Where(e => e.Id != user.Id)
@@ -81,16 +81,11 @@ public class UserController(
     }
 
     await transaction.CommitAsync();
-    return Ok(new UserDto
-    {
-      Id = user.Id,
-      FirstName = user.FirstName,
-      LastName = user.LastName,
-      Email = user.Email!,
-    });
+    return Ok(user.ToUserDtoFromApplicationUser());
   }
 
   [HttpGet("info")]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -99,12 +94,27 @@ public class UserController(
     if (User.Identity == null || User.Identity.Name == null) return Unauthorized();
     var user = await userManager.FindByNameAsync(User.Identity.Name);
     if (user == null) return NotFound();
-    return Ok(new UserDto
+    return Ok(user.ToUserDtoFromApplicationUser());
+  }
+
+  [HttpGet("link/{id:guid}")]
+  [Authorize(Policy = "RequireCompletedProfile")]
+  [ProducesResponseType<UserLinkStatusDto>(StatusCodes.Status200OK)]
+  public async Task<IActionResult> GetUserLinkStatus([FromRoute] Guid id)
+  {
+    var user = await this.GetCurrentUser(userManager);
+
+    var invitation = await dbContext.Invitations
+      .Where(e => (e.FromUserId == user.Id && e.ToUserId == id) || (e.ToUserId == user.Id && e.FromUserId == id))
+      .FirstOrDefaultAsync();
+    var conversation = await dbContext.Conversations
+      .Where(e => (e.FirstUserId == user.Id && e.SecondUserId == id) || (e.SecondUserId == user.Id && e.FirstUserId == id))
+      .FirstOrDefaultAsync();
+
+    return Ok(new UserLinkStatusDto
     {
-      Id = user.Id,
-      FirstName = user.FirstName,
-      LastName = user.LastName,
-      Email = user.Email!,
+      Invitation = invitation != null ? true : false,
+      Conversation = conversation != null ? true : false,
     });
   }
 }

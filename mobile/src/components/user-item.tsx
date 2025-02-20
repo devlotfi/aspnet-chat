@@ -31,33 +31,24 @@ export default function UserItem({ user }: Props) {
   const queryClient = useQueryClient();
   const navigation = useNavigation<NavigationProps["navigation"]>();
 
-  if (
-    !user.firstName ||
-    !user.lastName ||
-    !currrentUser ||
-    !currrentUser.firstName ||
-    !currrentUser.lastName
-  )
-    throw new Error("Missing user details");
+  if (!currrentUser) throw new Error("Missing user details");
 
-  const {
-    data: userInvitationStatusData,
-    isLoading: isUserInvitationStatusLoading,
-  } = $api.useQuery(
-    "get",
-    "/invitations/user/{id}",
-    {
-      params: {
-        path: {
-          id: user.id,
+  const { data: userLinkStatusData, isLoading: isUserLinkStatusLoading } =
+    $api.useQuery(
+      "get",
+      "/users/link/{id}",
+      {
+        params: {
+          path: {
+            id: user.id,
+          },
         },
       },
-    },
-    {
-      enabled: showDetails,
-      retry: false,
-    }
-  );
+      {
+        enabled: showDetails,
+        retry: false,
+      }
+    );
 
   const { mutate: mutateSendInvitation, isPending: isPendingSendInvitation } =
     $api.useMutation("post", "/invitations", {
@@ -119,7 +110,7 @@ export default function UserItem({ user }: Props) {
             padding: 10,
           }}
         >
-          {isUserInvitationStatusLoading ? (
+          {isUserLinkStatusLoading ? (
             <View
               style={{
                 flex: 1,
@@ -153,25 +144,43 @@ export default function UserItem({ user }: Props) {
                 </Text>
               </View>
               <View style={{ paddingHorizontal: 0 }}>
-                {userInvitationStatusData ? (
+                {userLinkStatusData &&
+                (userLinkStatusData.conversation ||
+                  userLinkStatusData.invitation) ? (
                   <View style={{ gap: 10 }}>
-                    <Text style={{ textAlign: "center" }}>
-                      iInvitation sent at:{" "}
-                      {DateUtils.formatDateTime(
-                        new Date(userInvitationStatusData.timestamp)
-                      )}
-                    </Text>
-
-                    <Button
-                      mode="outlined"
-                      contentStyle={{ width: "100%", paddingVertical: 5 }}
-                      onPress={() => {
-                        navigation.navigate("Invitations");
-                        setShowDetails(false);
-                      }}
-                    >
-                      Go to invitatations
-                    </Button>
+                    {userLinkStatusData.conversation ? (
+                      <>
+                        <Text style={{ textAlign: "center" }}>
+                          Conversation exists
+                        </Text>
+                        <Button
+                          mode="outlined"
+                          contentStyle={{ width: "100%", paddingVertical: 5 }}
+                          onPress={() => {
+                            navigation.navigate("Convsersations");
+                            setShowDetails(false);
+                          }}
+                        >
+                          Go to conversation
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Text style={{ textAlign: "center" }}>
+                          Invitation pending
+                        </Text>
+                        <Button
+                          mode="outlined"
+                          contentStyle={{ width: "100%", paddingVertical: 5 }}
+                          onPress={() => {
+                            navigation.navigate("Invitations");
+                            setShowDetails(false);
+                          }}
+                        >
+                          Go to invitatations
+                        </Button>
+                      </>
+                    )}
                   </View>
                 ) : (
                   <Button

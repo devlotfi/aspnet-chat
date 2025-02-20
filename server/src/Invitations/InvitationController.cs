@@ -45,23 +45,6 @@ public class InvitationController(
     return Ok(invitations);
   }
 
-  [HttpGet("user/{id:guid}")]
-  [Authorize(Policy = "RequireCompletedProfile")]
-  [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<IActionResult> GetUserInvitationStatus([FromRoute] Guid id)
-  {
-    var user = await this.GetCurrentUser(userManager);
-    var invitation = await dbContext.Invitations
-      .Where(e => (e.FromUserId == user.Id && e.ToUserId == id)
-        || (e.ToUserId == user.Id && e.FromUserId == id))
-      .Include(e => e.FromUser)
-      .Include(e => e.ToUser)
-      .FirstOrDefaultAsync();
-    if (invitation == null) return NotFound();
-    return Ok(invitation.ToInvitationDtoFromInvitation());
-  }
-
   [HttpPost]
   [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]
@@ -70,6 +53,12 @@ public class InvitationController(
   {
     var user = await this.GetCurrentUser(userManager);
     if (user.Id == createInvitationRequestDto.UserId) return BadRequest();
+
+    var conversation = await dbContext.Conversations.FirstOrDefaultAsync(
+      e => (e.FirstUserId == user.Id && e.SecondUserId == createInvitationRequestDto.UserId) ||
+      (e.SecondUserId == user.Id && e.FirstUserId == createInvitationRequestDto.UserId)
+    );
+    if (conversation != null) return Forbid();
 
     var existingInvitation = await dbContext.Invitations.FirstOrDefaultAsync(
       e => (e.FromUserId == user.Id && e.ToUserId == createInvitationRequestDto.UserId) ||

@@ -7,8 +7,8 @@ public static class UserMapper
     return new UserDto
     {
       Id = applicationUser.Id,
-      FirstName = applicationUser.FirstName,
-      LastName = applicationUser.LastName,
+      FirstName = applicationUser.FirstName ?? "",
+      LastName = applicationUser.LastName ?? "",
       Email = applicationUser.Email!,
     };
   }
@@ -18,8 +18,8 @@ public static class UserMapper
     return new UserPublicInfoDto
     {
       Id = applicationUser.Id,
-      FirstName = applicationUser.FirstName,
-      LastName = applicationUser.LastName,
+      FirstName = applicationUser.FirstName ?? "",
+      LastName = applicationUser.LastName ?? "",
     };
   }
 }
