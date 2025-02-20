@@ -5,8 +5,8 @@ export function getOtherUserInfo(
   user: components["schemas"]["UserDto"]
 ): components["schemas"]["UserPublicInfoDto"] {
   if (conversation.firstUser.id === user.id) {
-    return conversation.firstUser;
-  } else {
     return conversation.secondUser;
+  } else {
+    return conversation.firstUser;
   }
 }

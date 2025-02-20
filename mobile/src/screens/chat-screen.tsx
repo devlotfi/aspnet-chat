@@ -1,13 +1,26 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { View } from "react-native";
-import { Avatar, Button, IconButton, Text, useTheme } from "react-native-paper";
+import {
+  Avatar,
+  Button,
+  IconButton,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { RootNativeStackParamList } from "../navigation-types";
 import { useNavigation } from "@react-navigation/native";
 import { getOtherUserInfo } from "../utils/get-other-user-info";
 import { useContext } from "react";
 import { AuthContext } from "../context/auth-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleLeft,
+  faPaperPlane,
+} from "@fortawesome/free-solid-svg-icons";
+import ValidatedTextInput from "../components/validated-text-input";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 type Props = NativeStackScreenProps<RootNativeStackParamList, "Chat">;
 
@@ -20,6 +33,18 @@ export default function ChatScreen({ route }: Props) {
   if (!user) throw new Error("Missing user details");
 
   const otherUser = getOtherUserInfo(conversation, user);
+
+  const formik = useFormik({
+    initialValues: {
+      message: "",
+    },
+    validationSchema: yup.object({
+      message: yup.string().required(),
+    }),
+    onSubmit(values) {
+      console.log(values);
+    },
+  });
 
   return (
     <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
@@ -55,7 +80,46 @@ export default function ChatScreen({ route }: Props) {
           {otherUser.firstName} {otherUser.lastName}
         </Text>
       </View>
-      <Text>Chat {JSON.stringify(conversation)}</Text>
+
+      <View style={{ flex: 1 }}>
+        <Text>Chat {JSON.stringify(conversation)}</Text>
+      </View>
+
+      <View
+        style={{
+          padding: 12,
+          paddingVertical: 5,
+          backgroundColor: theme.colors.surface,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <TextInput
+            value={formik.values.message}
+            onChangeText={formik.handleChange("message")}
+            onBlur={formik.handleBlur("message")}
+            mode="outlined"
+            outlineStyle={{
+              borderRadius: 15,
+            }}
+            autoCapitalize="none"
+            label="Search"
+          ></TextInput>
+        </View>
+        <IconButton
+          mode="contained"
+          style={{ borderRadius: 10, height: 48, width: 48, marginTop: 10 }}
+          containerColor={theme.colors.primary}
+          iconColor={theme.colors.onPrimary}
+          icon={({ size }) => (
+            <FontAwesomeIcon icon={faPaperPlane} size={size}></FontAwesomeIcon>
+          )}
+          onPress={() => formik.handleSubmit()}
+        ></IconButton>
+      </View>
     </View>
   );
 }

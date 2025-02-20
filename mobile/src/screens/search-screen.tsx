@@ -144,25 +144,16 @@ export default function SearchScreen() {
           borderBottomRightRadius: 30,
         }}
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
+        <ValidatedTextInput
+          name="search"
+          formik={formik}
+          mode="outlined"
+          outlineStyle={{
+            borderRadius: 15,
           }}
-        >
-          <View style={{ flex: 1 }}>
-            <ValidatedTextInput
-              name="search"
-              formik={formik}
-              mode="outlined"
-              outlineStyle={{
-                borderRadius: 15,
-              }}
-              autoCapitalize="none"
-              label="Search"
-            ></ValidatedTextInput>
-          </View>
-        </View>
+          autoCapitalize="none"
+          label="Search"
+        ></ValidatedTextInput>
       </View>
 
       <UserList formik={formik}></UserList>
