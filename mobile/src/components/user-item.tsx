@@ -24,7 +24,7 @@ interface Props {
 
 type NavigationProps = BottomTabScreenProps<BottomTabsParamList, "Search">;
 
-export default function UserItem({ user }: Props & NavigationProps) {
+export default function UserItem({ user }: Props) {
   const theme = useTheme();
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const { user: currrentUser } = useContext(AuthContext);
@@ -156,14 +156,14 @@ export default function UserItem({ user }: Props & NavigationProps) {
                 {userInvitationStatusData ? (
                   <View style={{ gap: 10 }}>
                     <Text style={{ textAlign: "center" }}>
-                      Send at:{" "}
+                      iInvitation sent at:{" "}
                       {DateUtils.formatDateTime(
                         new Date(userInvitationStatusData.timestamp)
                       )}
                     </Text>
 
                     <Button
-                      mode="contained"
+                      mode="outlined"
                       contentStyle={{ width: "100%", paddingVertical: 5 }}
                       onPress={() => {
                         navigation.navigate("Invitations");

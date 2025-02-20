@@ -9,7 +9,7 @@ namespace AspNetChat.Users;
 
 [ApiController]
 [Route("users")]
-public class UsersController(
+public class UserController(
   UserManager<ApplicationUser> userManager,
   ApplicationDbContext dbContext
   ) : ControllerBase

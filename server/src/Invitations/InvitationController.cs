@@ -85,12 +85,7 @@ public class InvitationController(
     await dbContext.Invitations.AddAsync(invitation);
     await dbContext.SaveChangesAsync();
 
-    var createdInvitation = await dbContext.Invitations
-      .Include(e => e.FromUser)
-      .Include(e => e.ToUser)
-      .FirstOrDefaultAsync(e => e.Id == invitation.Id);
-    if (createdInvitation == null) return NotFound();
-    return CreatedAtAction(nameof(CreateInvitation), new { Id = invitation.Id }, invitation.ToInvitationDtoFromInvitation());
+    return Created();
   }
 
   [HttpDelete("{id:guid}")]
@@ -98,7 +93,11 @@ public class InvitationController(
   [ProducesResponseType(StatusCodes.Status200OK)]
   public async Task<IActionResult> DeleteInvitation([FromRoute] Guid id)
   {
-    await dbContext.Invitations.Where(e => e.Id == id).ExecuteDeleteAsync();
+    var user = await this.GetCurrentUser(userManager);
+    await dbContext.Invitations
+      .Where(e => e.FromUserId == user.Id || e.ToUserId == user.Id)
+      .Where(e => e.Id == id)
+      .ExecuteDeleteAsync();
     return Ok();
   }
 
@@ -109,10 +108,20 @@ public class InvitationController(
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   public async Task<IActionResult> AcceptInvitation([FromRoute] Guid id)
   {
+    using var transaction = await dbContext.Database.BeginTransactionAsync();
+
     var user = await this.GetCurrentUser(userManager);
     var invitation = await dbContext.Invitations.FindAsync(id);
-    if (invitation == null) return NotFound();
-    if (invitation.ToUserId != user.Id) return Forbid();
+    if (invitation == null)
+    {
+      await transaction.RollbackAsync();
+      return NotFound();
+    }
+    if (invitation.ToUserId != user.Id)
+    {
+      await transaction.RollbackAsync();
+      return Forbid();
+    }
 
     var conversation = new Conversation
     {
@@ -120,8 +129,13 @@ public class InvitationController(
       SecondUserId = invitation.ToUserId
     };
 
+    await dbContext.Invitations
+      .Where(e => e.Id == invitation.Id)
+      .ExecuteDeleteAsync();
     await dbContext.Conversations.AddAsync(conversation);
     await dbContext.SaveChangesAsync();
-    return CreatedAtAction(nameof(AcceptInvitation), new { Id = conversation.Id }, conversation.ToConvsersationDtoFromConvsersation());
+    await transaction.CommitAsync();
+
+    return Created();
   }
 }

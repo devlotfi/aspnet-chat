@@ -1,3 +1,4 @@
+using AspNetChat.Conversations;
 using AspNetChat.Global;
 using AspNetChat.Users;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -24,6 +25,8 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+builder.Services.AddSignalR();
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -42,6 +45,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<ConversationHub>("/conversations/hub");
 
 app.MapGroup("auth").MapIdentityApi<ApplicationUser>().WithTags(["Auth"]);
 

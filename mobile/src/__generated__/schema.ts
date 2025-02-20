@@ -822,6 +822,78 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ConversationDto"][];
+                        "application/json": components["schemas"]["ConversationDto"][];
+                        "text/json": components["schemas"]["ConversationDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/conversations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -832,109 +904,6 @@ export interface components {
             /** Format: int64 */
             expiresIn: number;
             refreshToken: string;
-        };
-        ApplicationUser: {
-            firstName?: string | null;
-            lastName?: string | null;
-            fromInvitations?: components["schemas"][];
-            toInvitations?: components["schemas"][];
-            firstConversations?: components["schemas"]["Conversation"][];
-            secondConversations?: components["schemas"];
-            messages?: components["schemas"];
-            /** Format: uuid */
-            id?: string;
-            userName?: string | null;
-            normalizedUserName?: string | null;
-            email?: string | null;
-            normalizedEmail?: string | null;
-            emailConfirmed?: boolean;
-            passwordHash?: string | null;
-            securityStamp?: string | null;
-            concurrencyStamp?: string | null;
-            phoneNumber?: string | null;
-            phoneNumberConfirmed?: boolean;
-            twoFactorEnabled?: boolean;
-            /** Format: date-time */
-            lockoutEnd?: string | null;
-            lockoutEnabled?: boolean;
-            /** Format: int32 */
-            accessFailedCount?: number;
-        };
-        ApplicationUser2: {
-            firstName?: string | null;
-            lastName?: string | null;
-            fromInvitations?: components["schemas"];
-            toInvitations?: components["schemas"];
-            firstConversations?: components["schemas"];
-            secondConversations?: components["schemas"][];
-            messages?: components["schemas"]["Message"][];
-            /** Format: uuid */
-            id?: string;
-            userName?: string | null;
-            normalizedUserName?: string | null;
-            email?: string | null;
-            normalizedEmail?: string | null;
-            emailConfirmed?: boolean;
-            passwordHash?: string | null;
-            securityStamp?: string | null;
-            concurrencyStamp?: string | null;
-            phoneNumber?: string | null;
-            phoneNumberConfirmed?: boolean;
-            twoFactorEnabled?: boolean;
-            /** Format: date-time */
-            lockoutEnd?: string | null;
-            lockoutEnabled?: boolean;
-            /** Format: int32 */
-            accessFailedCount?: number;
-        };
-        ApplicationUser3: {
-            firstName?: string | null;
-            lastName?: string | null;
-            fromInvitations?: components["schemas"];
-            toInvitations?: components["schemas"];
-            firstConversations?: components["schemas"];
-            secondConversations?: components["schemas"];
-            messages?: components["schemas"];
-            /** Format: uuid */
-            id?: string;
-            userName?: string | null;
-            normalizedUserName?: string | null;
-            email?: string | null;
-            normalizedEmail?: string | null;
-            emailConfirmed?: boolean;
-            passwordHash?: string | null;
-            securityStamp?: string | null;
-            concurrencyStamp?: string | null;
-            phoneNumber?: string | null;
-            phoneNumberConfirmed?: boolean;
-            twoFactorEnabled?: boolean;
-            /** Format: date-time */
-            lockoutEnd?: string | null;
-            lockoutEnabled?: boolean;
-            /** Format: int32 */
-            accessFailedCount?: number;
-        };
-        Conversation: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            firstUserId: string;
-            firstUser?: components["schemas"]["ApplicationUser2"];
-            /** Format: uuid */
-            secondUserId: string;
-            secondUser?: components["schemas"];
-            messages?: components["schemas"];
-        };
-        Conversation2: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            firstUserId: string;
-            firstUser?: components["schemas"];
-            /** Format: uuid */
-            secondUserId: string;
-            secondUser?: components["schemas"]["ApplicationUser3"];
-            messages?: components["schemas"][];
         };
         ConversationDto: {
             /** Format: uuid */
@@ -969,18 +938,6 @@ export interface components {
             email: string;
             isEmailConfirmed: boolean;
         };
-        Invitation: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            fromUserId: string;
-            fromUser?: components["schemas"]["ApplicationUser"];
-            /** Format: uuid */
-            toUserId: string;
-            toUser?: components["schemas"]["ApplicationUser3"];
-            /** Format: date-time */
-            timestamp?: string;
-        };
         InvitationDto: {
             /** Format: uuid */
             id: string;
@@ -994,18 +951,6 @@ export interface components {
             password: string;
             twoFactorCode?: string | null;
             twoFactorRecoveryCode?: string | null;
-        };
-        Message: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            userId: string;
-            user?: components["schemas"]["ApplicationUser3"];
-            /** Format: uuid */
-            convsersationId: string;
-            conversation?: components["schemas"]["Conversation2"];
-            /** Format: date-time */
-            timestamp: string;
         };
         PaginationResultOfUserPublicInfoDto: {
             items: components["schemas"]["UserPublicInfoDto"][];

@@ -2,21 +2,21 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { ActivityIndicator, Button, Text, useTheme } from "react-native-paper";
 import { $api } from "../api/openapi-client";
-import { Image } from "expo-image";
 import InvitationItem from "../components/invitation-item";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import NoContentView from "../components/no-content-view";
+import ErrorView from "../components/error-view";
+import LoadingView from "../components/loading-view";
 
 function RecievedInvitations() {
-  const { data, isLoading } = $api.useQuery("get", "/invitations/recieved");
+  const { data, isLoading, isError } = $api.useQuery(
+    "get",
+    "/invitations/recieved"
+  );
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator animating size="large"></ActivityIndicator>
-      </View>
-    );
-  }
+  if (isLoading) return <LoadingView></LoadingView>;
+  if (isError) return <ErrorView></ErrorView>;
 
   if (data && data.length > 0) {
     return (
@@ -31,26 +31,28 @@ function RecievedInvitations() {
       </ScrollView>
     );
   } else {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Image
-          source={require("../assets/empty.png")}
-          contentFit="contain"
-          style={{ height: 180, width: 180 }}
-        ></Image>
-        <Text style={{ fontSize: 20 }}>The list is empty</Text>
-      </View>
-    );
+    return <NoContentView></NoContentView>;
   }
 }
 
 function SentInvitations() {
-  const { data, isLoading } = $api.useQuery("get", "/invitations/sent");
+  const { data, isLoading, isError } = $api.useQuery(
+    "get",
+    "/invitations/sent"
+  );
 
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator animating size="large"></ActivityIndicator>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>An error occured</Text>
       </View>
     );
   }
@@ -68,16 +70,7 @@ function SentInvitations() {
       </ScrollView>
     );
   } else {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Image
-          source={require("../assets/empty.png")}
-          contentFit="contain"
-          style={{ height: 180, width: 180 }}
-        ></Image>
-        <Text style={{ fontSize: 20 }}>The list is empty</Text>
-      </View>
-    );
+    return <NoContentView></NoContentView>;
   }
 }
 

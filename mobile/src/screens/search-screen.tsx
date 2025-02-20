@@ -1,4 +1,4 @@
-import { useFormik } from "formik";
+import { FormikProps, useFormik } from "formik";
 import {
   Keyboard,
   ScrollView,
@@ -23,6 +23,97 @@ import UserItem from "../components/user-item";
 import { useContext } from "react";
 import { KeyboardContext } from "../context/keyboard-context";
 import { Image } from "expo-image";
+import NoContentView from "../components/no-content-view";
+import ErrorView from "../components/error-view";
+import LoadingView from "../components/loading-view";
+
+interface UserListProps {
+  formik: FormikProps<{ search: string; page: number }>;
+}
+
+function UserList({ formik }: UserListProps) {
+  const theme = useTheme();
+  const { isKeyboardVisible } = useContext(KeyboardContext);
+
+  const { data, isLoading, isError } = $api.useQuery("get", "/users", {
+    params: {
+      query: {
+        search: formik.values.search,
+        page: formik.values.page,
+      },
+    },
+  });
+
+  if (isLoading) return <LoadingView></LoadingView>;
+  if (isError) return <ErrorView></ErrorView>;
+
+  if (data && data.items.length > 0) {
+    return (
+      <>
+        <ScrollView style={{ flex: 1, padding: 10 }}>
+          {data.items.map((item) =>
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((e) => (
+              <UserItem key={item.id + e} user={item}></UserItem>
+            ))
+          )}
+        </ScrollView>
+        {!isKeyboardVisible && data && !isLoading && data.items.length > 0 ? (
+          <View
+            style={{
+              backgroundColor: theme.colors.surface,
+              padding: 10,
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <IconButton
+              mode="contained"
+              containerColor={theme.colors.background}
+              iconColor={theme.colors.onBackground}
+              style={{ borderRadius: 10 }}
+              icon={({ color }) => (
+                <FontAwesomeIcon
+                  icon={faAngleLeft}
+                  color={color}
+                ></FontAwesomeIcon>
+              )}
+              onPress={() => {
+                if (formik.values.page > 1) {
+                  formik.setFieldValue("page", formik.values.page - 1);
+                }
+              }}
+            ></IconButton>
+            <Text>
+              Page: {formik.values.page} / {data.pages}
+            </Text>
+            <IconButton
+              mode="contained"
+              containerColor={theme.colors.background}
+              iconColor={theme.colors.onBackground}
+              style={{ borderRadius: 10 }}
+              icon={({ color }) => (
+                <FontAwesomeIcon
+                  icon={faAngleRight}
+                  color={color}
+                ></FontAwesomeIcon>
+              )}
+              onPress={() => {
+                if (formik.values.page < data.pages) {
+                  formik.setFieldValue("page", formik.values.page + 1);
+                }
+              }}
+            ></IconButton>
+          </View>
+        ) : null}
+      </>
+    );
+  } else {
+    return <NoContentView></NoContentView>;
+  }
+}
 
 export default function SearchScreen() {
   const theme = useTheme();
@@ -35,15 +126,6 @@ export default function SearchScreen() {
     },
     onSubmit(values) {
       console.log(values);
-    },
-  });
-
-  const { data, isLoading, isError } = $api.useQuery("get", "/users", {
-    params: {
-      query: {
-        search: formik.values.search,
-        page: 1,
-      },
     },
   });
 
@@ -83,90 +165,7 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      {isLoading ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator animating size="large"></ActivityIndicator>
-        </View>
-      ) : isError ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>An error occured</Text>
-        </View>
-      ) : data && data.items.length > 0 ? (
-        <ScrollView style={{ flex: 1, padding: 10 }}>
-          {data?.items.map((item) =>
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((e) => (
-              <UserItem key={item.id + e} user={item}></UserItem>
-            ))
-          )}
-        </ScrollView>
-      ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Image
-            source={require("../assets/empty.png")}
-            contentFit="contain"
-            style={{ height: 180, width: 180 }}
-          ></Image>
-          <Text style={{ fontSize: 20 }}>The list is empty</Text>
-        </View>
-      )}
-
-      {!isKeyboardVisible && data && !isLoading && data.items.length > 0 ? (
-        <View
-          style={{
-            backgroundColor: theme.colors.surface,
-            padding: 10,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <IconButton
-            mode="contained"
-            containerColor={theme.colors.background}
-            iconColor={theme.colors.onBackground}
-            style={{ borderRadius: 10 }}
-            icon={({ color }) => (
-              <FontAwesomeIcon
-                icon={faAngleLeft}
-                color={color}
-              ></FontAwesomeIcon>
-            )}
-            onPress={() => {
-              if (formik.values.page > 1) {
-                formik.setFieldValue("page", formik.values.page - 1);
-              }
-            }}
-          ></IconButton>
-          <Text>
-            Page: {formik.values.page} / {data.pages}
-          </Text>
-          <IconButton
-            mode="contained"
-            containerColor={theme.colors.background}
-            iconColor={theme.colors.onBackground}
-            style={{ borderRadius: 10 }}
-            icon={({ color }) => (
-              <FontAwesomeIcon
-                icon={faAngleRight}
-                color={color}
-              ></FontAwesomeIcon>
-            )}
-            onPress={() => {
-              if (formik.values.page < data.pages) {
-                formik.setFieldValue("page", formik.values.page + 1);
-              }
-            }}
-          ></IconButton>
-        </View>
-      ) : null}
+      <UserList formik={formik}></UserList>
     </View>
   );
 }

@@ -20,10 +20,37 @@ export default function InvitationItem({ invitation, mode }: Props) {
     throw new Error("Missing user details");
 
   const {
+    mutate: mutateAcceptInvitation,
+    isPending: isPendingAcceptInvitation,
+  } = $api.useMutation("post", "/invitations/{id}", {
+    onSuccess() {
+      queryClient.resetQueries({
+        exact: false,
+        queryKey: ["get", "/invitations/sent"],
+      });
+      queryClient.resetQueries({
+        exact: false,
+        queryKey: ["get", "/invitations/recieved"],
+      });
+      queryClient.resetQueries({
+        exact: false,
+        queryKey: ["get", "/invitations/user/{id}"],
+      });
+      queryClient.resetQueries({
+        exact: false,
+        queryKey: ["get", "/conversations"],
+      });
+    },
+    onError(error) {
+      console.log(error);
+    },
+  });
+
+  const {
     mutate: mutateDeleteInvitation,
     isPending: isPendingDeleteInvitation,
   } = $api.useMutation("delete", "/invitations/{id}", {
-    onSuccess(data, variables, context) {
+    onSuccess() {
       queryClient.resetQueries({
         exact: false,
         queryKey: ["get", "/invitations/sent"],
@@ -37,7 +64,7 @@ export default function InvitationItem({ invitation, mode }: Props) {
         queryKey: ["get", "/invitations/user/{id}"],
       });
     },
-    onError(error, variables, context) {
+    onError(error) {
       console.log(error);
     },
   });
@@ -71,9 +98,9 @@ export default function InvitationItem({ invitation, mode }: Props) {
             mode="outlined"
             contentStyle={{ paddingVertical: 5 }}
             style={{ flex: 1 }}
-            loading={isPendingDeleteInvitation}
+            loading={isPendingAcceptInvitation}
             onPress={() => {
-              mutateDeleteInvitation({
+              mutateAcceptInvitation({
                 params: {
                   path: {
                     id: invitation.id,
