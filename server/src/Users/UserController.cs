@@ -24,16 +24,11 @@ public class UserController(
   {
     var user = await this.GetCurrentUser(userManager);
 
-    var users = await userManager.Users
-      .Select(e => new UserPublicInfoDto
-      {
-        Id = e.Id,
-        FirstName = e.FirstName ?? "",
-        LastName = e.LastName ?? ""
-      })
+    List<UserPublicInfoDto> users = await userManager.Users
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Where(e => e.Id != user.Id)
       .Skip((page - 1) * 10)
+      .Select(e => e.ToUserPublicInfoDtoFromApplicationUser())
       .ToListAsync();
     var count = await userManager.Users
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))

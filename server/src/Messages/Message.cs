@@ -6,9 +6,10 @@ namespace AspNetChat.Messages;
 public class Message
 {
   public Guid Id { get; set; }
+  public required string Text { get; set; }
   public required Guid UserId { get; set; }
   public ApplicationUser User { get; set; } = null!;
   public required Guid ConvsersationId { get; set; }
   public Conversation Conversation { get; set; } = null!;
-  public required DateTime Timestamp { get; set; } = DateTime.UtcNow;
+  public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 }

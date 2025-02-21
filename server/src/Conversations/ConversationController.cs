@@ -20,7 +20,7 @@ public class ConversationController(
   public async Task<IActionResult> Conversations()
   {
     var user = await this.GetCurrentUser(userManager);
-    var conversations = await dbContext.Conversations
+    List<ConversationDto> conversations = await dbContext.Conversations
       .Where(e => e.SecondUserId == user.Id || e.FirstUserId == user.Id)
       .Include(e => e.FirstUser)
       .Include(e => e.SecondUser)
@@ -34,8 +34,8 @@ public class ConversationController(
   {
     var user = await this.GetCurrentUser(userManager);
     await dbContext.Conversations
-      .Where(e => e.FirstUserId == user.Id || e.SecondUserId == user.Id)
       .Where(e => e.Id == id)
+      .Where(e => e.FirstUserId == user.Id || e.SecondUserId == user.Id)
       .ExecuteDeleteAsync();
     return Ok();
   }

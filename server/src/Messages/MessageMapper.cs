@@ -10,6 +10,7 @@ public static class MessageMapper
     return new MessageDto
     {
       Id = message.Id,
+      Text = message.Text,
       User = message.User.ToUserPublicInfoDtoFromApplicationUser(),
       Conversation = message.Conversation.ToConvsersationDtoFromConvsersation(),
       Timestamp = message.Timestamp,

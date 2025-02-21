@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
   Avatar,
   Button,
@@ -21,6 +21,41 @@ import {
 import ValidatedTextInput from "../components/validated-text-input";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { $api } from "../api/openapi-client";
+import ErrorView from "../components/error-view";
+import InvitationItem from "../components/invitation-item";
+import LoadingView from "../components/loading-view";
+import NoContentView from "../components/no-content-view";
+import MessageItem from "../components/message-item";
+
+interface MessageListProps {
+  id: string;
+}
+
+function MessageList({ id }: MessageListProps) {
+  const { data, isLoading, isError } = $api.useQuery("get", "/messages/{id}", {
+    params: {
+      path: {
+        id,
+      },
+    },
+  });
+
+  if (isLoading) return <LoadingView></LoadingView>;
+  if (isError) return <ErrorView></ErrorView>;
+
+  if (data && data.length > 0) {
+    return (
+      <ScrollView style={{ flex: 1, padding: 10 }}>
+        {data.map((item) => (
+          <MessageItem key={item.id} message={item}></MessageItem>
+        ))}
+      </ScrollView>
+    );
+  } else {
+    return <NoContentView></NoContentView>;
+  }
+}
 
 type Props = NativeStackScreenProps<RootNativeStackParamList, "Chat">;
 
@@ -83,6 +118,7 @@ export default function ChatScreen({ route }: Props) {
 
       <View style={{ flex: 1 }}>
         <Text>Chat {JSON.stringify(conversation)}</Text>
+        <MessageList id={conversation.id}></MessageList>
       </View>
 
       <View

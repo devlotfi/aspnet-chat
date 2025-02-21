@@ -36,7 +36,7 @@ public class InvitationController(
   public async Task<IActionResult> SendInvitations()
   {
     var user = await this.GetCurrentUser(userManager);
-    var invitations = await dbContext.Invitations
+    List<InvitationDto> invitations = await dbContext.Invitations
       .Where(e => e.FromUserId == user.Id)
       .Include(e => e.FromUser)
       .Include(e => e.ToUser)
@@ -47,7 +47,7 @@ public class InvitationController(
 
   [HttpPost]
   [Authorize(Policy = "RequireCompletedProfile")]
-  [ProducesResponseType<InvitationDto>(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   public async Task<IActionResult> CreateInvitation([FromBody] CreateInvitationRequestDto createInvitationRequestDto)
   {
@@ -92,7 +92,7 @@ public class InvitationController(
 
   [HttpPost("{id:guid}")]
   [Authorize(Policy = "RequireCompletedProfile")]
-  [ProducesResponseType<ConversationDto>(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   public async Task<IActionResult> AcceptInvitation([FromRoute] Guid id)

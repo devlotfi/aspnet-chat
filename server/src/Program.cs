@@ -1,23 +1,31 @@
-using AspNetChat.Conversations;
 using AspNetChat.Global;
+using AspNetChat.Messages;
 using AspNetChat.Users;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+var dbConnectionString = builder.Configuration.GetConnectionString("Database");
+if (dbConnectionString == null) throw new Exception("No db connection string");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+    options.UseNpgsql(dbConnectionString);
 });
 
-builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
-.AddEntityFrameworkStores<ApplicationDbContext>();
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+if (redisConnectionString == null) throw new Exception("No redis connection string");
+builder.Services
+    .AddSignalR()
+    .AddStackExchangeRedis(redisConnectionString);
 
-builder.Services.AddAuthorization(options =>
+builder.Services
+    .AddIdentityApiEndpoints<ApplicationUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services
+.AddAuthorization(options =>
 {
     options.AddPolicy("RequireCompletedProfile", (policy) =>
     {
@@ -25,7 +33,6 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -46,7 +53,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<ConversationHub>("/conversations/hub");
+app.MapHub<MessageHub>("/messages/hub");
 
 app.MapGroup("auth").MapIdentityApi<ApplicationUser>().WithTags(["Auth"]);
 

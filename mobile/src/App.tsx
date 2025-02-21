@@ -192,7 +192,9 @@ export default function Providers() {
         <KeyboardProvider>
           <StatusBarLayout>
             <AuthProvider>
-              <App></App>
+              <SignalRProvider>
+                <App></App>
+              </SignalRProvider>
             </AuthProvider>
           </StatusBarLayout>
         </KeyboardProvider>

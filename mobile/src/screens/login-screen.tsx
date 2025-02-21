@@ -8,11 +8,11 @@ import { useContext, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import StartupNavbar from "../components/startup-navbar";
-import { handleAccessTokenResponse } from "../utils/handle-access-token-response";
 import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../api/openapi-client";
 import ValidatedTextInput from "../components/validated-text-input";
 import { KeyboardContext } from "../context/keyboard-context";
+import { handleAccessTokenResponse } from "../api/handle-access-token-response";
 
 type Props = NativeStackScreenProps<RootNativeStackParamList, "Login">;
 

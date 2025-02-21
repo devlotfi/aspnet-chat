@@ -5,9 +5,9 @@ import { ActivityIndicator, useTheme } from "react-native-paper";
 import { useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { Constants } from "../constants";
-import { handleAccessTokenResponse } from "../utils/handle-access-token-response";
 import { $api } from "../api/openapi-client";
 import MissingNamesScreen from "../screens/missing-names-screen";
+import { handleAccessTokenResponse } from "../api/handle-access-token-response";
 
 interface AuthContextType {
   user: components["schemas"]["UserDto"] | null;

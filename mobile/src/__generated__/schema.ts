@@ -706,11 +706,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["InvitationDto"];
-                        "application/json": components["schemas"]["InvitationDto"];
-                        "text/json": components["schemas"]["InvitationDto"];
-                    };
+                    content?: never;
                 };
                 /** @description Forbidden */
                 403: {
@@ -756,11 +752,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ConversationDto"];
-                        "application/json": components["schemas"]["ConversationDto"];
-                        "text/json": components["schemas"]["ConversationDto"];
-                    };
+                    content?: never;
                 };
                 /** @description Forbidden */
                 403: {
@@ -883,6 +875,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/messages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["MessageDto"][];
+                        "application/json": components["schemas"]["MessageDto"][];
+                        "text/json": components["schemas"]["MessageDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -940,6 +971,15 @@ export interface components {
             password: string;
             twoFactorCode?: string | null;
             twoFactorRecoveryCode?: string | null;
+        };
+        MessageDto: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+            user: components["schemas"]["UserPublicInfoDto"];
+            conversation: components["schemas"]["ConversationDto"];
+            /** Format: date-time */
+            timestamp: string;
         };
         PaginationResultOfUserPublicInfoDto: {
             items: components["schemas"]["UserPublicInfoDto"][];
