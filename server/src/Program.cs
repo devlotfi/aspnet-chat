@@ -17,8 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 if (redisConnectionString == null) throw new Exception("No redis connection string");
 builder.Services
-    .AddSignalR()
-    .AddStackExchangeRedis(redisConnectionString);
+    .AddSignalR();
 
 builder.Services
     .AddIdentityApiEndpoints<ApplicationUser>()
@@ -53,7 +52,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<MessageHub>("/messages/hub");
+app.MapHub<MessageHub>("/hubs/messages");
 
 app.MapGroup("auth").MapIdentityApi<ApplicationUser>().WithTags(["Auth"]);
 

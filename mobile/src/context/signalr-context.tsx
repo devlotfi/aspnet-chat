@@ -21,7 +21,7 @@ interface SignalRContextType {
 
 const initialValue: SignalRContextType = {
   connection: new HubConnectionBuilder()
-    .withUrl("http://192.168.1.77:3000/messages/hub", {
+    .withUrl("http://192.168.1.77:3000/hubs/messages", {
       async accessTokenFactory() {
         return (await getAccessToken()) || "";
       },
@@ -38,25 +38,27 @@ export function SignalRProvider({ children }: PropsWithChildren) {
   const connectionRef = useRef<HubConnection>(initialValue.connection);
 
   useEffect(() => {
-    if (user) {
-      connectionRef.current.start();
-    }
-
     connectionRef.current.on("message", (message) => {
       console.log("message", message);
     });
 
     return () => {
-      //connectionRef.current.stop();
+      connectionRef.current.stop();
     };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      connectionRef.current.start();
+    } else {
+      connectionRef.current.stop();
+    }
   }, [user]);
 
   return (
     <SignalRContext.Provider value={{ connection: connectionRef.current }}>
       <Button
         onPress={() => {
-          console.log("lol");
-
           connectionRef.current.send("SendMessage", "lol");
         }}
       >
