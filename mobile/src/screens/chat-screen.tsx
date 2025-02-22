@@ -27,6 +27,9 @@ import InvitationItem from "../components/invitation-item";
 import LoadingView from "../components/loading-view";
 import NoContentView from "../components/no-content-view";
 import MessageItem from "../components/message-item";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { SignalRContext } from "../context/signalr-context";
+import { SignalREvents } from "../signalr-events";
 
 interface MessageListProps {
   id: string;
@@ -61,13 +64,28 @@ type Props = NativeStackScreenProps<RootNativeStackParamList, "Chat">;
 
 export default function ChatScreen({ route }: Props) {
   const theme = useTheme();
+  const queryClient = useQueryClient();
   const navigation = useNavigation<Props["navigation"]>();
   const { conversation } = route.params;
   const { user } = useContext(AuthContext);
+  const { connection } = useContext(SignalRContext);
 
   if (!user) throw new Error("Missing user details");
 
   const otherUser = getOtherUserInfo(conversation, user);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (messageText: string) => {
+      await connection.invoke(
+        SignalREvents.SendMessage,
+        conversation.id,
+        messageText
+      );
+    },
+    onSuccess() {
+      formik.resetForm();
+    },
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -78,6 +96,7 @@ export default function ChatScreen({ route }: Props) {
     }),
     onSubmit(values) {
       console.log(values);
+      mutate(values.message);
     },
   });
 
@@ -117,7 +136,6 @@ export default function ChatScreen({ route }: Props) {
       </View>
 
       <View style={{ flex: 1 }}>
-        <Text>Chat {JSON.stringify(conversation)}</Text>
         <MessageList id={conversation.id}></MessageList>
       </View>
 
@@ -153,6 +171,7 @@ export default function ChatScreen({ route }: Props) {
           icon={({ size }) => (
             <FontAwesomeIcon icon={faPaperPlane} size={size}></FontAwesomeIcon>
           )}
+          loading={isPending}
           onPress={() => formik.handleSubmit()}
         ></IconButton>
       </View>

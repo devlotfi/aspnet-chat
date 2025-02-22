@@ -12,7 +12,7 @@ public static class MessageMapper
       Id = message.Id,
       Text = message.Text,
       User = message.User.ToUserPublicInfoDtoFromApplicationUser(),
-      Conversation = message.Conversation.ToConvsersationDtoFromConvsersation(),
+      ConversationId = message.Conversation.Id,
       Timestamp = message.Timestamp,
     };
   }

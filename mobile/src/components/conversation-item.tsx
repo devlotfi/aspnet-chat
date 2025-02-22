@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Avatar,
   Button,
+  Divider,
   Modal,
   Portal,
   Text,
@@ -39,30 +40,30 @@ export default function ConversationItem({ conversation }: Props) {
   const otherUser = getOtherUserInfo(conversation, user);
 
   return (
-    <Pressable
-      onPress={() =>
-        navigation.navigate("Chat", {
-          conversation,
-        })
-      }
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-        borderWidth: 1,
-        borderColor: theme.colors.outline,
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 15,
-      }}
-    >
-      <Avatar.Text
-        size={60}
-        label={`${otherUser.firstName[0]}${otherUser.lastName[0]}`}
-      ></Avatar.Text>
-      <Text style={{ fontSize: 20 }}>
-        {otherUser.firstName} {otherUser.lastName}
-      </Text>
-    </Pressable>
+    <>
+      <Pressable
+        onPress={() =>
+          navigation.navigate("Chat", {
+            conversation,
+          })
+        }
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 10,
+          borderRadius: 10,
+          padding: 15,
+        }}
+      >
+        <Avatar.Text
+          size={60}
+          label={`${otherUser.firstName[0]}${otherUser.lastName[0]}`}
+        ></Avatar.Text>
+        <Text style={{ fontSize: 20 }}>
+          {otherUser.firstName} {otherUser.lastName}
+        </Text>
+      </Pressable>
+      <Divider style={{ backgroundColor: theme.colors.outline }}></Divider>
+    </>
   );
 }

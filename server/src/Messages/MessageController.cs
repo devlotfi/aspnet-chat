@@ -30,6 +30,9 @@ public class MessageController(
 
     List<MessageDto> messages = await dbContext.Messages
       .Where(e => e.ConvsersationId == conversation.Id)
+      .OrderBy(e => e.Timestamp)
+      .Include(e => e.User)
+      .Include(e => e.Conversation)
       .Select(e => e.ToMessageDtoFromMessage())
       .ToListAsync();
     return Ok(messages);

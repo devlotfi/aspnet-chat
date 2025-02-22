@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Avatar,
   Button,
+  Divider,
   Modal,
   Portal,
   Text,
@@ -79,11 +80,8 @@ export default function UserItem({ user }: Props) {
           flexDirection: "row",
           alignItems: "center",
           gap: 10,
-          borderWidth: 1,
-          borderColor: theme.colors.outline,
           borderRadius: 10,
           padding: 15,
-          marginBottom: 15,
         }}
       >
         <Avatar.Text
@@ -94,6 +92,7 @@ export default function UserItem({ user }: Props) {
           {user.firstName} {user.lastName}
         </Text>
       </Pressable>
+      <Divider style={{ backgroundColor: theme.colors.outline }}></Divider>
 
       <Portal>
         <Modal
