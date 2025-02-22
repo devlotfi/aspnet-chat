@@ -13,14 +13,6 @@ public class MessageHub(
 ) : Hub
 {
   [Authorize(Policy = "RequireCompletedProfile")]
-  public async Task Ping(string message)
-  {
-    Console.WriteLine(Context.User.Identity.Name);
-    Console.WriteLine(message);
-    await Clients.All.SendAsync("message", "hello world");
-  }
-
-  [Authorize(Policy = "RequireCompletedProfile")]
   public async Task SendMessage(Guid conversationId, string messageText)
   {
     var user = await this.GetCurrentUser(userManager);
@@ -50,7 +42,7 @@ public class MessageHub(
     var messageDto = message.ToMessageDtoFromMessage();
     Console.WriteLine(user.UserName);
     Console.WriteLine(otherUser.UserName);
-    await Clients.User(user.Id.ToString()).SendAsync("RecieveMessage", messageDto);
-    await Clients.User(otherUser.Id.ToString()).SendAsync("RecieveMessage", messageDto);
+    await Clients.User(user.Id.ToString()).SendAsync("RecieveMessage", conversationId, messageDto);
+    await Clients.User(otherUser.Id.ToString()).SendAsync("RecieveMessage", conversationId, messageDto);
   }
 }

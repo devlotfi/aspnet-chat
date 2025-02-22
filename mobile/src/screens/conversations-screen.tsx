@@ -38,7 +38,8 @@ export default function ConvsersationsScreen() {
           backgroundColor: theme.colors.surface,
           borderBottomLeftRadius: 30,
           borderBottomRightRadius: 30,
-          padding: 15,
+          padding: 18,
+          paddingHorizontal: 25,
         }}
       >
         <Text style={{ fontSize: 25, fontWeight: "bold" }}>Conversations</Text>

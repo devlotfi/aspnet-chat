@@ -884,7 +884,9 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    lastMessageId?: string;
+                };
                 header?: never;
                 path: {
                     id: string;
@@ -977,7 +979,8 @@ export interface components {
             id: string;
             text: string;
             user: components["schemas"]["UserPublicInfoDto"];
-            conversation: components["schemas"]["ConversationDto"];
+            /** Format: uuid */
+            conversationId: string;
             /** Format: date-time */
             timestamp: string;
         };

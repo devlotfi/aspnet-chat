@@ -19,7 +19,7 @@ public class MessageController(
   [HttpGet("{id:guid}")]
   [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<List<MessageDto>>(StatusCodes.Status200OK)]
-  public async Task<IActionResult> Messages([FromRoute] Guid id)
+  public async Task<IActionResult> Messages([FromRoute] Guid id, [FromQuery] Guid? lastMessageId = null)
   {
     var user = await this.GetCurrentUser(userManager);
     var conversation = await dbContext.Conversations
@@ -27,14 +27,19 @@ public class MessageController(
       .Where(e => e.FirstUserId == user.Id || e.SecondUserId == user.Id)
       .FirstOrDefaultAsync();
     if (conversation == null) return NotFound();
-
-    List<MessageDto> messages = await dbContext.Messages
+    Console.WriteLine(lastMessageId);
+    List<Message> messages = await dbContext.Messages
       .Where(e => e.ConvsersationId == conversation.Id)
-      .OrderBy(e => e.Timestamp)
+      .Where(e => lastMessageId != null ? e.Id < lastMessageId : true)
+      .OrderByDescending(e => e.Id)
       .Include(e => e.User)
       .Include(e => e.Conversation)
-      .Select(e => e.ToMessageDtoFromMessage())
+      .Take(5)
       .ToListAsync();
-    return Ok(messages);
+    List<MessageDto> messageDtos = messages
+      .Select(e => e.ToMessageDtoFromMessage())
+      .Reverse()
+      .ToList();
+    return Ok(messageDtos);
   }
 }

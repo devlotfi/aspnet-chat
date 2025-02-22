@@ -11,23 +11,28 @@ import {
 import { RootNativeStackParamList } from "../navigation-types";
 import { useNavigation } from "@react-navigation/native";
 import { getOtherUserInfo } from "../utils/get-other-user-info";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/auth-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faAngleDoubleLeft,
   faPaperPlane,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import ValidatedTextInput from "../components/validated-text-input";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { $api } from "../api/openapi-client";
+import { $api, fetchClient } from "../api/openapi-client";
 import ErrorView from "../components/error-view";
 import InvitationItem from "../components/invitation-item";
 import LoadingView from "../components/loading-view";
 import NoContentView from "../components/no-content-view";
 import MessageItem from "../components/message-item";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { SignalRContext } from "../context/signalr-context";
 import { SignalREvents } from "../signalr-events";
 
@@ -36,23 +41,100 @@ interface MessageListProps {
 }
 
 function MessageList({ id }: MessageListProps) {
-  const { data, isLoading, isError } = $api.useQuery("get", "/messages/{id}", {
-    params: {
-      path: {
-        id,
+  const theme = useTheme();
+  const queryClient = useQueryClient();
+
+  const fetchMessages = async (
+    conversationId: string,
+    lastMessageId?: string
+  ) => {
+    const { data } = await fetchClient.GET("/messages/{id}", {
+      params: {
+        path: {
+          id: conversationId,
+        },
+        query: {
+          lastMessageId,
+        },
       },
+    });
+    return data!;
+  };
+
+  const {
+    data,
+    isLoading,
+    isError,
+    hasPreviousPage,
+    isFetchingPreviousPage,
+    fetchPreviousPage,
+  } = useInfiniteQuery({
+    queryKey: ["MESSAGES", id],
+    queryFn: async ({ pageParam }) =>
+      await fetchMessages(id, pageParam === "" ? undefined : pageParam),
+    initialPageParam: "",
+    getPreviousPageParam: (firstPage) => {
+      if (!firstPage.length) {
+        return undefined;
+      }
+      console.log(firstPage[0]);
+
+      return firstPage[0].id;
     },
+    getNextPageParam: () => undefined,
+    refetchOnWindowFocus: false,
+    networkMode: "online",
   });
+
+  useEffect(
+    () => () => {
+      queryClient.resetQueries({
+        exact: false,
+        queryKey: ["MESSAGES"],
+      });
+    },
+    []
+  );
 
   if (isLoading) return <LoadingView></LoadingView>;
   if (isError) return <ErrorView></ErrorView>;
 
-  if (data && data.length > 0) {
+  if (data && data.pages.length > 0) {
     return (
       <ScrollView style={{ flex: 1, padding: 10 }}>
-        {data.map((item) => (
-          <MessageItem key={item.id} message={item}></MessageItem>
-        ))}
+        {hasPreviousPage ? (
+          <Button
+            mode="contained"
+            loading={isFetchingPreviousPage}
+            onPress={() => fetchPreviousPage()}
+            style={{
+              alignSelf: "center",
+              borderWidth: 1,
+              borderColor: theme.colors.outline,
+            }}
+            textColor={theme.colors.onBackground}
+            buttonColor={theme.colors.surface}
+            icon={({ color, size }) => (
+              <FontAwesomeIcon
+                icon={faPlus}
+                color={color}
+                size={size}
+              ></FontAwesomeIcon>
+            )}
+          >
+            More messages
+          </Button>
+        ) : null}
+
+        <View>
+          {data.pages.map((page, index) => (
+            <View key={index}>
+              {page.map((item) => (
+                <MessageItem key={item.id} message={item}></MessageItem>
+              ))}
+            </View>
+          ))}
+        </View>
       </ScrollView>
     );
   } else {
@@ -64,7 +146,6 @@ type Props = NativeStackScreenProps<RootNativeStackParamList, "Chat">;
 
 export default function ChatScreen({ route }: Props) {
   const theme = useTheme();
-  const queryClient = useQueryClient();
   const navigation = useNavigation<Props["navigation"]>();
   const { conversation } = route.params;
   const { user } = useContext(AuthContext);
