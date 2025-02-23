@@ -25,7 +25,7 @@ import SearchScreen from "./screens/search-screen";
 import ProfileScreen from "./screens/profile-screen";
 import RegisterScreen from "./screens/register-screen";
 import { KeyboardProvider } from "./context/keyboard-context";
-import { SignalRProvider } from "./context/signalr-context";
+import { ChatProvider } from "./context/chat-context";
 import ChatScreen from "./screens/chat-screen";
 
 const BottomTabs = createBottomTabNavigator();
@@ -192,9 +192,9 @@ export default function Providers() {
         <KeyboardProvider>
           <StatusBarLayout>
             <AuthProvider>
-              <SignalRProvider>
+              <ChatProvider>
                 <App></App>
-              </SignalRProvider>
+              </ChatProvider>
             </AuthProvider>
           </StatusBarLayout>
         </KeyboardProvider>

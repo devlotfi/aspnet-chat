@@ -64,7 +64,7 @@ export default function UserItem({ user }: Props) {
         });
         queryClient.resetQueries({
           exact: false,
-          queryKey: ["get", "/invitations/user/{id}"],
+          queryKey: ["get", "/users/link/{id}"],
         });
       },
       onError(error, variables, context) {
@@ -85,7 +85,7 @@ export default function UserItem({ user }: Props) {
         }}
       >
         <Avatar.Text
-          size={60}
+          size={50}
           label={`${user.firstName[0]}${user.lastName[0]}`}
         ></Avatar.Text>
         <Text style={{ fontSize: 20 }}>

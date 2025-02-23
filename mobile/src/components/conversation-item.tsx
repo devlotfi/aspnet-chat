@@ -56,7 +56,7 @@ export default function ConversationItem({ conversation }: Props) {
         }}
       >
         <Avatar.Text
-          size={60}
+          size={50}
           label={`${otherUser.firstName[0]}${otherUser.lastName[0]}`}
         ></Avatar.Text>
         <Text style={{ fontSize: 20 }}>

@@ -61,7 +61,7 @@ export default function InvitationItem({ invitation, mode }: Props) {
       });
       queryClient.resetQueries({
         exact: false,
-        queryKey: ["get", "/invitations/user/{id}"],
+        queryKey: ["get", "/users/link/{id}"],
       });
     },
     onError(error) {

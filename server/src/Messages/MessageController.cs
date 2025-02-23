@@ -27,8 +27,8 @@ public class MessageController(
       .Where(e => e.FirstUserId == user.Id || e.SecondUserId == user.Id)
       .FirstOrDefaultAsync();
     if (conversation == null) return NotFound();
-    Console.WriteLine(lastMessageId);
-    List<Message> messages = await dbContext.Messages
+
+    var messages = await dbContext.Messages
       .Where(e => e.ConvsersationId == conversation.Id)
       .Where(e => lastMessageId != null ? e.Id < lastMessageId : true)
       .OrderByDescending(e => e.Id)
@@ -36,7 +36,7 @@ public class MessageController(
       .Include(e => e.Conversation)
       .Take(5)
       .ToListAsync();
-    List<MessageDto> messageDtos = messages
+    var messageDtos = messages
       .Select(e => e.ToMessageDtoFromMessage())
       .Reverse()
       .ToList();

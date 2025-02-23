@@ -25,9 +25,11 @@ public class InvitationController(
       .Where(e => e.ToUserId == user.Id)
       .Include(e => e.FromUser)
       .Include(e => e.ToUser)
-      .Select(e => e.ToInvitationDtoFromInvitation())
       .ToListAsync();
-    return Ok(invitations);
+    var invitationDtos = invitations
+      .Select(e => e.ToInvitationDtoFromInvitation())
+      .ToList();
+    return Ok(invitationDtos);
   }
 
   [HttpGet("sent")]
@@ -36,13 +38,15 @@ public class InvitationController(
   public async Task<IActionResult> SendInvitations()
   {
     var user = await this.GetCurrentUser(userManager);
-    List<InvitationDto> invitations = await dbContext.Invitations
+    var invitations = await dbContext.Invitations
       .Where(e => e.FromUserId == user.Id)
       .Include(e => e.FromUser)
       .Include(e => e.ToUser)
-      .Select(e => e.ToInvitationDtoFromInvitation())
       .ToListAsync();
-    return Ok(invitations);
+    var invitationDtos = invitations
+     .Select(e => e.ToInvitationDtoFromInvitation())
+     .ToList();
+    return Ok(invitationDtos);
   }
 
   [HttpPost]

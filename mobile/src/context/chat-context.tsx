@@ -34,9 +34,9 @@ const initialValue: SignalRContextType = {
     .build(),
 };
 
-export const SignalRContext = createContext(initialValue);
+export const ChatContext = createContext(initialValue);
 
-export function SignalRProvider({ children }: PropsWithChildren) {
+export function ChatProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const { user } = useContext(AuthContext);
   const connectionRef = useRef<HubConnection>(initialValue.connection);
@@ -87,8 +87,8 @@ export function SignalRProvider({ children }: PropsWithChildren) {
   }, [user]);
 
   return (
-    <SignalRContext.Provider value={{ connection: connectionRef.current }}>
+    <ChatContext.Provider value={{ connection: connectionRef.current }}>
       {children}
-    </SignalRContext.Provider>
+    </ChatContext.Provider>
   );
 }

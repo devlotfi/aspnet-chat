@@ -1,5 +1,10 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ScrollView, View } from "react-native";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  View,
+} from "react-native";
 import {
   Avatar,
   Button,
@@ -11,13 +16,15 @@ import {
 import { RootNativeStackParamList } from "../navigation-types";
 import { useNavigation } from "@react-navigation/native";
 import { getOtherUserInfo } from "../utils/get-other-user-info";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../context/auth-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faAngleDoubleLeft,
+  faGear,
   faPaperPlane,
   faPlus,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import ValidatedTextInput from "../components/validated-text-input";
 import { useFormik } from "formik";
@@ -33,8 +40,9 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { SignalRContext } from "../context/signalr-context";
+import { ChatContext } from "../context/chat-context";
 import { SignalREvents } from "../signalr-events";
+import DeleteConversationDialog from "../components/delete-conversation-dialog";
 
 interface MessageListProps {
   id: string;
@@ -43,6 +51,15 @@ interface MessageListProps {
 function MessageList({ id }: MessageListProps) {
   const theme = useTheme();
   const queryClient = useQueryClient();
+  const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const atBottom =
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - 10; // Adding a small threshold
+    setIsAtBottom(atBottom);
+  };
 
   const fetchMessages = async (
     conversationId: string,
@@ -101,7 +118,18 @@ function MessageList({ id }: MessageListProps) {
 
   if (data && data.pages.length > 0) {
     return (
-      <ScrollView style={{ flex: 1, padding: 10 }}>
+      <ScrollView
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        style={{ flex: 1, padding: 10 }}
+        onContentSizeChange={() => {
+          if (isAtBottom && scrollViewRef.current) {
+            scrollViewRef.current.scrollToEnd({
+              animated: true,
+            });
+          }
+        }}
+      >
         {hasPreviousPage ? (
           <Button
             mode="contained"
@@ -135,6 +163,7 @@ function MessageList({ id }: MessageListProps) {
             </View>
           ))}
         </View>
+        <View style={{ height: 20 }}></View>
       </ScrollView>
     );
   } else {
@@ -149,7 +178,9 @@ export default function ChatScreen({ route }: Props) {
   const navigation = useNavigation<Props["navigation"]>();
   const { conversation } = route.params;
   const { user } = useContext(AuthContext);
-  const { connection } = useContext(SignalRContext);
+  const { connection } = useContext(ChatContext);
+  const [deleteDialogVisible, setDeleteDialogVisible] =
+    useState<boolean>(false);
 
   if (!user) throw new Error("Missing user details");
 
@@ -182,80 +213,107 @@ export default function ChatScreen({ route }: Props) {
   });
 
   return (
-    <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
-      <View
-        style={{
-          backgroundColor: theme.colors.surface,
-          padding: 12,
-          borderBottomLeftRadius: 30,
-          borderBottomRightRadius: 30,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <IconButton
-          mode="contained"
-          containerColor={theme.colors.background}
-          size={20}
-          icon={({ size }) => (
-            <FontAwesomeIcon
-              icon={faAngleDoubleLeft}
-              size={size}
-              color={theme.colors.onBackground}
-            ></FontAwesomeIcon>
-          )}
-          onPress={() => navigation.goBack()}
-        ></IconButton>
-        <Avatar.Text
-          size={40}
-          label={`${otherUser.firstName[0]}${otherUser.lastName[0]}`}
-        ></Avatar.Text>
-        <Text style={{ fontSize: 16 }}>
-          {otherUser.firstName} {otherUser.lastName}
-        </Text>
-      </View>
+    <>
+      <View style={{ backgroundColor: theme.colors.background, flex: 1 }}>
+        <View
+          style={{
+            backgroundColor: theme.colors.surface,
+            padding: 12,
+            borderBottomLeftRadius: 30,
+            borderBottomRightRadius: 30,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <IconButton
+              mode="contained"
+              containerColor={theme.colors.background}
+              size={20}
+              icon={({ size }) => (
+                <FontAwesomeIcon
+                  icon={faAngleDoubleLeft}
+                  size={size}
+                  color={theme.colors.onBackground}
+                ></FontAwesomeIcon>
+              )}
+              onPress={() => navigation.goBack()}
+            ></IconButton>
+            <Avatar.Text
+              size={40}
+              label={`${otherUser.firstName[0]}${otherUser.lastName[0]}`}
+            ></Avatar.Text>
+            <Text style={{ fontSize: 16 }}>
+              {otherUser.firstName} {otherUser.lastName}
+            </Text>
+          </View>
 
-      <View style={{ flex: 1 }}>
-        <MessageList id={conversation.id}></MessageList>
-      </View>
-
-      <View
-        style={{
-          padding: 12,
-          paddingVertical: 5,
-          backgroundColor: theme.colors.surface,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <TextInput
-            value={formik.values.message}
-            onChangeText={formik.handleChange("message")}
-            onBlur={formik.handleBlur("message")}
-            mode="outlined"
-            outlineStyle={{
-              borderRadius: 15,
-            }}
-            autoCapitalize="none"
-            label="Search"
-          ></TextInput>
+          <IconButton
+            mode="contained"
+            containerColor={theme.colors.background}
+            size={20}
+            icon={({ size }) => (
+              <FontAwesomeIcon
+                icon={faTrash}
+                size={size}
+                color={theme.colors.errorContainer}
+              ></FontAwesomeIcon>
+            )}
+            onPress={() => setDeleteDialogVisible(true)}
+          ></IconButton>
         </View>
-        <IconButton
-          mode="contained"
-          style={{ borderRadius: 10, height: 48, width: 48, marginTop: 10 }}
-          containerColor={theme.colors.primary}
-          iconColor={theme.colors.onPrimary}
-          icon={({ size }) => (
-            <FontAwesomeIcon icon={faPaperPlane} size={size}></FontAwesomeIcon>
-          )}
-          loading={isPending}
-          onPress={() => formik.handleSubmit()}
-        ></IconButton>
+
+        <View style={{ flex: 1 }}>
+          <MessageList id={conversation.id}></MessageList>
+        </View>
+
+        <View
+          style={{
+            padding: 12,
+            paddingVertical: 5,
+            backgroundColor: theme.colors.surface,
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <TextInput
+              value={formik.values.message}
+              onChangeText={formik.handleChange("message")}
+              onBlur={formik.handleBlur("message")}
+              mode="outlined"
+              outlineStyle={{
+                borderRadius: 15,
+              }}
+              autoCapitalize="none"
+              label="Search"
+            ></TextInput>
+          </View>
+          <IconButton
+            mode="contained"
+            style={{ borderRadius: 10, height: 48, width: 48, marginTop: 10 }}
+            containerColor={theme.colors.primary}
+            iconColor={theme.colors.onPrimary}
+            icon={({ size }) => (
+              <FontAwesomeIcon
+                icon={faPaperPlane}
+                size={size}
+              ></FontAwesomeIcon>
+            )}
+            loading={isPending}
+            onPress={() => formik.handleSubmit()}
+          ></IconButton>
+        </View>
       </View>
-    </View>
+
+      <DeleteConversationDialog
+        visible={deleteDialogVisible}
+        setVisible={setDeleteDialogVisible}
+        conversation={conversation}
+      ></DeleteConversationDialog>
+    </>
   );
 }

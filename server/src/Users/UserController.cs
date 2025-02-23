@@ -15,7 +15,7 @@ public class UserController(
   ) : ControllerBase
 {
   [HttpGet]
-  [Authorize]
+  [Authorize(Policy = "RequireCompletedProfile")]
   [ProducesResponseType<PaginationResult<UserPublicInfoDto>>(StatusCodes.Status200OK)]
   public async Task<IActionResult> Users(
     [FromQuery] int page,
@@ -24,12 +24,15 @@ public class UserController(
   {
     var user = await this.GetCurrentUser(userManager);
 
-    List<UserPublicInfoDto> users = await userManager.Users
+    var users = await userManager.Users
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Where(e => e.Id != user.Id)
       .Skip((page - 1) * 10)
-      .Select(e => e.ToUserPublicInfoDtoFromApplicationUser())
       .ToListAsync();
+    var userDtos = users
+      .Select(e => e.ToUserPublicInfoDtoFromApplicationUser())
+      .ToList();
+
     var count = await userManager.Users
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Where(e => e.Id != user.Id)
@@ -38,7 +41,7 @@ public class UserController(
 
     return Ok(new PaginationResult<UserPublicInfoDto>
     {
-      Items = users,
+      Items = userDtos,
       Pages = (int)Math.Ceiling((decimal)count / 10)
     });
   }

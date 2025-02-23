@@ -20,13 +20,15 @@ public class ConversationController(
   public async Task<IActionResult> Conversations()
   {
     var user = await this.GetCurrentUser(userManager);
-    List<ConversationDto> conversations = await dbContext.Conversations
+    var conversations = await dbContext.Conversations
       .Where(e => e.SecondUserId == user.Id || e.FirstUserId == user.Id)
       .Include(e => e.FirstUser)
       .Include(e => e.SecondUser)
-      .Select(e => e.ToConvsersationDtoFromConvsersation())
       .ToListAsync();
-    return Ok(conversations);
+    var conversationDtos = conversations
+      .Select(e => e.ToConvsersationDtoFromConvsersation())
+      .ToList();
+    return Ok(conversationDtos);
   }
 
   [HttpDelete("{id:guid}")]
