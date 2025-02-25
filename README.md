@@ -1,8 +1,8 @@
 <img src="https://raw.githubusercontent.com/devlotfi/aspnet-chat/main/github-assets/github-banner.png">
 
-# 📜 js-chat
+# 📜 aspnet-chat
 
-A simple chat app that uses google accounts
+A simple chat app built with React Native (Expo) and ASP.NET
 
 # 📌 Contents
 
@@ -15,63 +15,57 @@ A simple chat app that uses google accounts
 ## Frontend
 
 <p float="left">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/html.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/css.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/ts.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/tailwind.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/react.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/reactnative.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/expo.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/fontawesome.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/formik.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/heroui.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/react-native-paper.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/reactnavigation.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/tanstack-query.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/react-router.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/vite.svg">
 </p>
 
 ## Backend
 
 <p float="left">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/nodejs.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/nestjs.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/redis.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/prisma.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/cs.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/asp-dotnet-core.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/asp-dotnet-identity.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/ef-core.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/signalr.svg">
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/postgres.svg">
-</p>
-
-## Other
-
-<p float="left">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/jwt.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/socketio.svg">
-  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/googleoauth.svg">
+  <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/redis.svg">
 </p>
 
 # 📂 Project Setup
 
 ## Requirements
 
+- .NET Core
 - Node JS
 - pnpm
 
 ## Install
 
 ```bash
+# In mobile folder
 $ pnpm i
 ```
 
 ## Development
 
-First have to configure the ENV variables first on the server and client and run the database migrations
+First have to configure the appsettings in the server folder based on the template
 
 ```bash
-# Run in server folder
-$ pnpm run start:dev
+# Run in mobile folder
+$ pnpm run start
 
-# Run in web folder
-$ pnpm run dev
+# Run in server folder
+$ dotnet watch
 ```
 
 # 📷 Preview
 
 <img src="https://raw.githubusercontent.com/devlotfi/aspnet-chat/main/github-assets/preview/preview-1.png">
-<img src="https://raw.githubusercontent.com/devlotfi/js-chat/main/github-assets/preview-2.png">
+<img src="https://raw.githubusercontent.com/devlotfi/aspnet-chat/main/github-assets/preview/preview-2.png">
+<img src="https://raw.githubusercontent.com/devlotfi/aspnet-chat/main/github-assets/preview/preview-3.png">
