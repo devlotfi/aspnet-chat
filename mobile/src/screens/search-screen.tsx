@@ -51,11 +51,9 @@ function UserList({ formik }: UserListProps) {
     return (
       <>
         <ScrollView style={{ flex: 1, padding: 10 }}>
-          {data.items.map((item) =>
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((e) => (
-              <UserItem key={item.id + e} user={item}></UserItem>
-            ))
-          )}
+          {data.items.map((item) => (
+            <UserItem key={item.id} user={item}></UserItem>
+          ))}
         </ScrollView>
         {!isKeyboardVisible && data && !isLoading && data.items.length > 0 ? (
           <View

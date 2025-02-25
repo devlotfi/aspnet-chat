@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250216165842_Init")]
+    [Migration("20250225094754_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -81,6 +81,10 @@ namespace server.Migrations
                     b.Property<Guid>("ConvsersationId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
@@ -117,11 +121,9 @@ namespace server.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")

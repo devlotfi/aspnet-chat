@@ -28,6 +28,7 @@ public class UserController(
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Where(e => e.Id != user.Id)
       .Skip((page - 1) * 10)
+      .Take(10)
       .ToListAsync();
     var userDtos = users
       .Select(e => e.ToUserPublicInfoDtoFromApplicationUser())
@@ -36,7 +37,6 @@ public class UserController(
     var count = await userManager.Users
       .Where(e => e.FirstName != null && e.LastName != null && (e.FirstName.Contains(search) || e.LastName.Contains(search)))
       .Where(e => e.Id != user.Id)
-      .Skip((page - 1) * 10)
       .CountAsync();
 
     return Ok(new PaginationResult<UserPublicInfoDto>
@@ -83,7 +83,7 @@ public class UserController(
   }
 
   [HttpGet("info")]
-  [Authorize(Policy = "RequireCompletedProfile")]
+  [Authorize]
   [ProducesResponseType<UserDto>(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]

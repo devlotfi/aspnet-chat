@@ -173,13 +173,6 @@ export default function LoginScreen() {
                 >
                   Register
                 </Button>
-                <Button
-                  mode="outlined"
-                  contentStyle={{ padding: 5 }}
-                  onPress={() => navigation.navigate("Start")}
-                >
-                  Back
-                </Button>
               </>
             ) : null}
           </View>

@@ -82,7 +82,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   if (
     userData &&
-    (userData.firstName === null || !userData.lastName === null)
+    (userData.firstName === null ||
+      userData.lastName === null ||
+      userData.firstName === "" ||
+      userData.lastName === "")
   ) {
     return <MissingNamesScreen></MissingNamesScreen>;
   }

@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using AspNetChat.Global;
 using AspNetChat.Messages;
 using AspNetChat.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +17,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(dbConnectionString);
 });
 
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-if (redisConnectionString == null) throw new Exception("No redis connection string");
+var redisHost = builder.Configuration["Redis:Host"];
+var redisUser = builder.Configuration["Redis:User"];
+var redisPassword = builder.Configuration["Redis:Password"];
+if (
+    redisHost == null ||
+    redisUser == null ||
+    redisPassword == null
+) throw new Exception("Missing redis connection");
 builder.Services
-    .AddSignalR();
+    .AddSignalR()
+    .AddStackExchangeRedis(redisHost, options =>
+    {
+        options.Configuration.User = redisUser;
+        options.Configuration.Password = redisPassword;
+        options.Configuration.ChannelPrefix = RedisChannel.Literal("SIGNALR_BACKPLANE");
+    });
 
 builder.Services
     .AddIdentityApiEndpoints<ApplicationUser>()
