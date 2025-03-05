@@ -25,6 +25,8 @@ A simple chat app built with React Native (Expo) and ASP.NET
   <img height="50px" src="https://devlotfi.github.io/stack-icons/icons/tanstack-query.svg">
 </p>
 
+Some illustration made by [Freepik](https://www.freepik.com/)
+
 ## Backend
 
 <p float="left">
